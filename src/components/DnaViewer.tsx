@@ -3,7 +3,7 @@ import { hotspots } from '../data/dna';
 import { createDnaScene, type DnaScene } from '../lib/dnaScene';
 import { DnaFallback } from './DnaFallback';
 
-export default function DnaViewer({ active, onBack }: { active: boolean; onBack: () => void }) {
+export default function DnaViewer({ active, onBack, onPrepared }: { active: boolean; onBack: () => void; onPrepared: () => void }) {
   const container = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const callout = useRef<HTMLElement>(null);
@@ -46,16 +46,17 @@ export default function DnaViewer({ active, onBack }: { active: boolean; onBack:
     let scene: DnaScene;
     try {
       scene = createDnaScene({ canvas: canvas.current, container: container.current,
-        onReady: () => setReady(true),
-        onError: () => setFallback('O modelo 3D não pôde ser aberto. Exibindo uma representação compatível.'),
+        onReady: () => { setReady(true); onPrepared(); },
+        onError: () => { setFallback('O modelo 3D não pôde ser aberto. Exibindo uma representação compatível.'); onPrepared(); },
         onDragging: setDragging, onFrame: positionCallout });
       controller.current = scene;
     } catch {
       setFallback('A aceleração 3D não está disponível neste navegador. Exibindo uma representação compatível.');
+      onPrepared();
       return;
     }
     return () => { scene.dispose(); controller.current = null; };
-  }, []);
+  }, [onPrepared]);
 
   useEffect(() => {
     controller.current?.setActive(active && !fallback);

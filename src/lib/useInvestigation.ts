@@ -13,7 +13,6 @@ interface State {
   activeSuspect: number | null;
   pickerOrigin: 'case' | 'guess';
   infoOrigin: 'home' | 'guess';
-  infoVisited: boolean;
 }
 export type Action =
   | { type: 'case'; id: CaseId }
@@ -30,7 +29,7 @@ export type Action =
 const emptyCode = () => ['', '', '', ''];
 const initialState: State = {
   view: 'home', caseId: 'Veneno', modal: null, guesses: {}, code: emptyCode(),
-  activeSuspect: null, pickerOrigin: 'case', infoOrigin: 'home', infoVisited: false,
+  activeSuspect: null, pickerOrigin: 'case', infoOrigin: 'home',
 };
 
 function reducer(state: State, action: Action): State {
@@ -41,7 +40,7 @@ function reducer(state: State, action: Action): State {
     case 'navigate':
       return { ...state, view: action.view, modal: null, code: emptyCode() };
     case 'info':
-      return { ...state, view: 'info', modal: null, infoVisited: true,
+      return { ...state, view: 'info', modal: null,
         infoOrigin: state.view === 'guess' ? 'guess' : 'home',
         code: pending ? emptyCode() : state.code };
     case 'closeInfo':

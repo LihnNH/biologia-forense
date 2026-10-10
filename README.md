@@ -11,11 +11,19 @@ npm install
 npm run dev
 npm run build
 npm run preview
+npm run optimize:portraits
 ```
 
 - `dev`: inicia o servidor de desenvolvimento; use o endereço exibido no terminal.
 - `build`: gera a versão de produção em `dist/`, incluindo os recursos de `assets/`.
 - `preview`: serve o último build para conferência local.
+- `optimize:portraits`: gera WebP de até 480 px em `assets/casos-webp/`, preservando os PNGs originais.
+
+Ao entrar, uma tela com progresso prepara as fontes, todos os SVGs e retratos,
+o modelo GLB, suas texturas e os shaders do DNA. As imagens ficam decodificadas
+em memória, e a cena 3D é mantida pronta, sem animação enquanto estiver oculta.
+Falhas de imagens/fontes permitem tentar novamente ou continuar; se o 3D falhar,
+a aplicação utiliza a representação 2D.
 
 A aplicação está disponível em `/` e em `/trabalho.html`, para manter o endereço antigo.
 
@@ -40,13 +48,14 @@ npm test
 - `src/debug/`: componentes React das páginas de apoio.
 - `assets/`: SVGs e o modelo `dna.glb`; o Vite processa os arquivos utilizados.
 - `assets/casos/`: fotos dos suspeitos, separadas por caso, exibidas sem corte na galeria.
+- `assets/casos-webp/`: versões leves utilizadas pela aplicação; os originais não entram no build.
 - `tests/`: navegação, quatro soluções, erros de palpite, teclado, código, DNA e layout mobile.
 
 Three.js, GLTFLoader, marked e fontes Inter/Bebas Neue vêm dos pacotes npm.
 O modelo 3D é carregado diretamente do arquivo GLB; não há cópia em base64
 nem dependência de scripts ou fontes de `vendor`.
 
-O visualizador é carregado ao abrir a explicação do DNA. Arraste para girar,
+O visualizador é preparado durante o carregamento inicial. Arraste para girar,
 use a roda do mouse ou `+`/`-` para aproximar e as setas para girar pelo teclado.
 As teclas `1` a `6` mostram os pontos explicativos; `L` abre a licença.
 Quando a aceleração 3D ou o carregamento do modelo falha, a hélice 2D é exibida.

@@ -14,6 +14,62 @@ async function enterCode(page: Page, code: string) {
   for (let index = 0; index < 4; index++) await fields.nth(index).fill(code[index]);
 }
 
+test('carrega os 19 retratos antes de liberar a página e mantém o DNA preparado', async ({ page }, testInfo) => {
+  const portraitsRequested = new Set<string>();
+  let modelsRequested = 0;
+  page.on('request', request => {
+    if (request.url().endsWith('.webp')) portraitsRequested.add(request.url());
+    if (request.url().endsWith('.glb')) modelsRequested++;
+  });
+  await page.addInitScript(() => {
+    const compile = WebGL2RenderingContext.prototype.compileShader;
+    WebGL2RenderingContext.prototype.compileShader = function (shader: WebGLShader) {
+      sessionStorage.setItem('shaderCompiles', String(Number(sessionStorage.getItem('shaderCompiles') || 0) + 1));
+      return compile.call(this, shader);
+    };
+  });
+  let release!: () => void;
+  const pausedPortrait = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/laura-almeida-*.webp', async route => {
+    await pausedPortrait;
+    await route.continue();
+  });
+  await page.goto('/');
+  await expect(page.getByRole('progressbar', { name: 'Carregamento inicial' })).toBeVisible();
+  await expect(page.locator('main.page')).toHaveAttribute('inert', '');
+  await expect(page.locator('#home-view')).toBeHidden();
+  await expect.poll(() => portraitsRequested.size).toBe(19);
+  await expect.poll(async () => Number(await page.locator('.startup-progress').getAttribute('value'))).toBeGreaterThan(0);
+  await page.screenshot({ path: testInfo.outputPath('startup-loading.png') });
+  release();
+  await expect(page.locator('.startup-screen')).toHaveCount(0);
+  expect(modelsRequested).toBe(1);
+  expect(await page.evaluate(() => document.fonts.status)).toBe('loaded');
+  const shaderCompiles = await page.evaluate(() => Number(sessionStorage.getItem('shaderCompiles')));
+  expect(shaderCompiles).toBeGreaterThan(0);
+  await page.locator('#open-dna-info-home').click();
+  await expect(page.locator('#dna-3d-status')).toHaveClass(/hidden/);
+  await page.locator('#dna-viewer canvas').focus();
+  await page.keyboard.press('ArrowRight');
+  await page.locator('#close-dna-info').click();
+  await page.locator('#open-dna-info-home').click();
+  expect(await page.evaluate(() => Number(sessionStorage.getItem('shaderCompiles')))).toBe(shaderCompiles);
+  expect(modelsRequested).toBe(1);
+});
+
+test('uma foto com falha permite tentar novamente sem bloquear a aplicação', async ({ page }) => {
+  let failPortrait = true;
+  await page.route('**/laura-almeida-*.webp', route => failPortrait ? route.abort() : route.continue());
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible();
+  await expect(page.locator('main.page')).toHaveAttribute('inert', '');
+  failPortrait = false;
+  await page.getByRole('button', { name: 'Tentar novamente' }).click();
+  await expect(page.locator('.startup-screen')).toHaveCount(0);
+  await page.locator('[data-case="Martelo"]').click();
+  await expect.poll(() => page.getByRole('img', { name: 'Foto de Laura Almeida', exact: true }).evaluate(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0)).toBe(true);
+});
+
 test('a página inicial mantém os cards, recursos e fundo sem erros de runtime', async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));

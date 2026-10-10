@@ -1,23 +1,23 @@
 import type { CaseId } from './cases';
-import rafael from '../../assets/casos/lamina-sombria/rafael-oliveira.png';
-import mariana from '../../assets/casos/lamina-sombria/mariana-costa.png';
-import diego from '../../assets/casos/lamina-sombria/diego-martins.png';
-import patricia from '../../assets/casos/lamina-sombria/patricia-alves.png';
-import bruno from '../../assets/casos/lamina-sombria/bruno-santos.png';
-import ricardo from '../../assets/casos/ultimo-gole/ricardo-gomes.png';
-import vanessa from '../../assets/casos/ultimo-gole/vanessa-ribeiro.png';
-import marceloSilva from '../../assets/casos/ultimo-gole/marcelo-silva.png';
-import juliana from '../../assets/casos/ultimo-gole/juliana-costa.png';
-import gustavo from '../../assets/casos/ultimo-gole/gustavo-almeida.png';
-import joao from '../../assets/casos/impacto-fatal/joao-batista.png';
-import carlos from '../../assets/casos/impacto-fatal/carlos-henrique.png';
-import marceloLima from '../../assets/casos/impacto-fatal/marcelo-lima.png';
-import renata from '../../assets/casos/impacto-fatal/renata-souza.png';
-import laura from '../../assets/casos/impacto-fatal/laura-almeida.png';
-import helena from '../../assets/casos/no-mortal/helena-martins.png';
-import marcos from '../../assets/casos/no-mortal/marcos-vinicius.png';
-import tereza from '../../assets/casos/no-mortal/tereza.png';
-import sebastiao from '../../assets/casos/no-mortal/sebastiao.png';
+import rafael from '../../assets/casos-webp/lamina-sombria/rafael-oliveira.webp';
+import mariana from '../../assets/casos-webp/lamina-sombria/mariana-costa.webp';
+import diego from '../../assets/casos-webp/lamina-sombria/diego-martins.webp';
+import patricia from '../../assets/casos-webp/lamina-sombria/patricia-alves.webp';
+import bruno from '../../assets/casos-webp/lamina-sombria/bruno-santos.webp';
+import ricardo from '../../assets/casos-webp/ultimo-gole/ricardo-gomes.webp';
+import vanessa from '../../assets/casos-webp/ultimo-gole/vanessa-ribeiro.webp';
+import marceloSilva from '../../assets/casos-webp/ultimo-gole/marcelo-silva.webp';
+import juliana from '../../assets/casos-webp/ultimo-gole/juliana-costa.webp';
+import gustavo from '../../assets/casos-webp/ultimo-gole/gustavo-almeida.webp';
+import joao from '../../assets/casos-webp/impacto-fatal/joao-batista.webp';
+import carlos from '../../assets/casos-webp/impacto-fatal/carlos-henrique.webp';
+import marceloLima from '../../assets/casos-webp/impacto-fatal/marcelo-lima.webp';
+import renata from '../../assets/casos-webp/impacto-fatal/renata-souza.webp';
+import laura from '../../assets/casos-webp/impacto-fatal/laura-almeida.webp';
+import helena from '../../assets/casos-webp/no-mortal/helena-martins.webp';
+import marcos from '../../assets/casos-webp/no-mortal/marcos-vinicius.webp';
+import tereza from '../../assets/casos-webp/no-mortal/tereza.webp';
+import sebastiao from '../../assets/casos-webp/no-mortal/sebastiao.webp';
 
 export const suspectPortraits: Record<CaseId, Record<string, string>> = {
   Faca: {

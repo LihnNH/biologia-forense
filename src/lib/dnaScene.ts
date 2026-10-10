@@ -3,6 +3,23 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import modelUrl from '../../assets/dna.glb?url';
 import { hotspotPositions, type Position, type SavedPoint } from '../data/dna';
 
+let modelBytes: Promise<ArrayBuffer> | null = null;
+
+function loadModelBytes() {
+  if (!modelBytes) {
+    const request = new AbortController();
+    const timeout = window.setTimeout(() => request.abort(), 30_000);
+    modelBytes = fetch(modelUrl, { signal: request.signal })
+      .then(response => {
+        if (!response.ok) throw new Error(`Falha ao carregar DNA: ${response.status}`);
+        return response.arrayBuffer();
+      })
+      .catch(error => { modelBytes = null; throw error; })
+      .finally(() => window.clearTimeout(timeout));
+  }
+  return modelBytes;
+}
+
 interface Options {
   canvas: HTMLCanvasElement;
   container: HTMLElement;
@@ -53,6 +70,7 @@ export function createDnaScene(options: Options): DnaScene {
   let disposed = false;
   let active = false;
   let modelReady = false;
+  let preparationFailed = false;
   let modelRadius = 1;
   let animationFrame = 0;
   let lastTime = performance.now();
@@ -62,6 +80,15 @@ export function createDnaScene(options: Options): DnaScene {
   let wasDragged = false;
   let pointCount = 0;
   let pointer: { id: number; startX: number; startY: number; x: number; y: number; dragged: boolean } | null = null;
+  const preparationTimeout = window.setTimeout(() => preparationError(new Error('Tempo limite ao preparar o DNA.')), 45_000);
+
+  function preparationError(error: unknown) {
+    if (disposed || preparationFailed) return;
+    preparationFailed = true;
+    window.clearTimeout(preparationTimeout);
+    setActive(false);
+    options.onError(error);
+  }
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 0);
@@ -87,8 +114,9 @@ export function createDnaScene(options: Options): DnaScene {
 
   function resize() {
     if (disposed) return;
-    const width = Math.max(container.clientWidth, 1);
-    const height = Math.max(container.clientHeight, 1);
+    // The viewer starts hidden: prepare it at viewport size, not a 1px buffer.
+    const width = Math.max(container.clientWidth || window.innerWidth, 1);
+    const height = Math.max(container.clientHeight || window.innerHeight, 1);
     const aspect = width / height;
     const halfView = modelRadius * 1.16 / Math.min(aspect, 1);
     camera.left = -halfView * aspect;
@@ -206,8 +234,12 @@ export function createDnaScene(options: Options): DnaScene {
   const observer = new ResizeObserver(resize);
   observer.observe(container);
   window.addEventListener('resize', resize, { signal: listeners.signal });
-  new GLTFLoader().loadAsync(modelUrl).then(gltf => {
-    if (disposed) { disposeObjects(gltf.scene); return; }
+  void loadModelBytes().then(async bytes => {
+    // StrictMode may dispose the first controller while the shared download runs.
+    if (disposed || preparationFailed) return;
+    const baseUrl = new URL('.', new URL(modelUrl, window.location.href)).href;
+    const gltf = await new GLTFLoader().parseAsync(bytes, baseUrl);
+    if (disposed || preparationFailed) { disposeObjects(gltf.scene); return; }
     const model = gltf.scene;
     model.rotation.x = -Math.PI / 2;
     model.updateMatrixWorld(true);
@@ -231,10 +263,23 @@ export function createDnaScene(options: Options): DnaScene {
       markerGroup.add(sprite);
     });
     modelGroup.rotation.set(targetRotationX, targetRotationY, 0);
-    modelReady = true;
     resize();
+    await renderer.compileAsync(scene, camera);
+    if (disposed || preparationFailed) return;
+    const textures = new Set<THREE.Texture>();
+    scene.traverse(object => {
+      if (!(object instanceof THREE.Mesh || object instanceof THREE.Sprite)) return;
+      for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+        for (const value of Object.values(material)) if (value instanceof THREE.Texture) textures.add(value);
+      }
+    });
+    textures.forEach(texture => renderer.initTexture(texture));
+    // Warm the geometry buffers and first draw in the actual retained renderer.
+    renderer.render(scene, camera);
+    modelReady = true;
+    window.clearTimeout(preparationTimeout);
     options.onReady();
-  }).catch(error => { if (!disposed) { setActive(false); options.onError(error); } });
+  }).catch(preparationError);
 
   function animate(time: number) {
     if (!active || disposed) return;
@@ -246,12 +291,14 @@ export function createDnaScene(options: Options): DnaScene {
     modelGroup.rotation.y = THREE.MathUtils.lerp(modelGroup.rotation.y, targetRotationY, smoothing);
     camera.zoom = THREE.MathUtils.lerp(camera.zoom, targetZoom, smoothing);
     camera.updateProjectionMatrix();
-    renderer.render(scene, camera);
-    options.onFrame?.();
+    if (modelReady) {
+      renderer.render(scene, camera);
+      options.onFrame?.();
+    }
     animationFrame = requestAnimationFrame(animate);
   }
   function setActive(value: boolean) {
-    if (disposed || active === value) return;
+    if (disposed || (value && preparationFailed) || active === value) return;
     active = value;
     if (active) {
       resize();
@@ -275,6 +322,8 @@ export function createDnaScene(options: Options): DnaScene {
       return { x: (projected.x * .5 + .5) * container.clientWidth, y: (-projected.y * .5 + .5) * container.clientHeight };
     },
     dispose() {
+      if (disposed) return;
+      window.clearTimeout(preparationTimeout);
       setActive(false);
       disposed = true;
       listeners.abort();
