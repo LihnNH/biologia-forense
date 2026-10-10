@@ -7,17 +7,17 @@ export function CaseScreen({ caseId, onHome, onGuess }: {
   onGuess: () => void;
 }) {
   return <article className="screen-panel case-panel">
-    <div className="screen-topbar">
+    <div className="case-heading">
       <h2 className="screen-title" id="case-title">{CASE_LABELS[caseId]}</h2>
-      <button className="back-button" type="button" onClick={onHome}>Voltar</button>
     </div>
     <ul className="suspect-gallery" aria-label={`Suspeitos — ${CASE_LABELS[caseId]}`}>
       {CASES[caseId].suspects.map(suspect => <li className="suspect-portrait" key={suspect.name}>
         <img src={suspectPortraits[caseId][suspect.name]} alt={`Foto de ${suspect.name}`} width={900} height={1420} decoding="async" />
       </li>)}
     </ul>
-    <div className="actions-row">
+    <div className="case-actions">
       <button className="action-button" type="button" id="open-guess" onClick={onGuess}>Palpite</button>
+      <button className="back-button" type="button" onClick={onHome}>Voltar</button>
     </div>
   </article>;
 }
