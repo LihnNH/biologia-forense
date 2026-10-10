@@ -56,6 +56,31 @@ Quando a aceleração 3D ou o carregamento do modelo falha, a hélice 2D é exib
 
 Essas páginas também fazem parte do build.
 
+## GitHub Pages
+
+O workflow `.github/workflows/deploy-pages.yml` publica o site a cada push na
+branch `main`. Ele instala as dependências com `npm ci`, verifica os tipos,
+gera o build e publica o conteúdo de `dist/`.
+
+Em **Settings → Pages → Build and deployment → Source**, selecione **GitHub Actions**.
+Essa opção já está configurada no repositório `LihnNH/biologia-forense`.
+Também é possível publicar manualmente em **Actions → Publicar no GitHub Pages → Run workflow**.
+
+Site: [lihnnh.github.io/biologia-forense](https://lihnnh.github.io/biologia-forense/).
+O workflow utiliza o caminho informado pelo Pages como base do Vite, incluindo
+os recursos do modelo 3D e as páginas de apoio. Para conferir esse build localmente:
+
+```sh
+npm run build -- --base=/biologia-forense/
+npm run preview
+```
+
+Para usar `biologia-forense.com`, configure também **Settings → Pages → Custom domain**
+e os registros DNS no provedor do domínio. Em publicações via Actions, o arquivo
+`CNAME` sozinho não configura o domínio; consulte a
+[documentação do GitHub](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
+Depois de configurar o domínio, execute o workflow novamente para atualizar a base do build.
+
 ## Licença do modelo
 
 O modelo [DNA](https://skfb.ly/onW7w), de LucasPresoto, usa a licença
