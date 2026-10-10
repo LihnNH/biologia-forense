@@ -1,7 +1,8 @@
 # Feira de Ciências 2026
 
-Verificador de DNA em React + TypeScript + Vite. Os quatro casos, depoimentos,
-soluções, estilos responsivos e animações do protótipo foram preservados.
+Verificador de DNA em React + TypeScript + Vite. Cada caso abre uma galeria
+com as fotos dos suspeitos, com acesso ao palpite. Os retratos são apenas
+ilustrativos por enquanto; depoimentos, soluções e animações continuam disponíveis.
 
 ## Comandos
 
@@ -38,6 +39,7 @@ npm test
 - `src/styles/`: estilos da aplicação e das páginas de apoio.
 - `src/debug/`: componentes React das páginas de apoio.
 - `assets/`: SVGs e o modelo `dna.glb`; o Vite processa os arquivos utilizados.
+- `assets/casos/`: fotos dos suspeitos, separadas por caso, exibidas sem corte na galeria.
 - `tests/`: navegação, quatro soluções, erros de palpite, teclado, código, DNA e layout mobile.
 
 Three.js, GLTFLoader, marked e fontes Inter/Bebas Neue vêm dos pacotes npm.

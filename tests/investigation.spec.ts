@@ -27,11 +27,46 @@ test('a página inicial mantém os cards, recursos e fundo sem erros de runtime'
   await page.locator('[data-case="Faca"]').focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#case-title')).toHaveText('Lâmina Sombria');
-  await expect(page.locator('#case-description')).toContainText('Evidências');
+  await expect(page.getByRole('list', { name: 'Suspeitos — Lâmina Sombria' })).toBeVisible();
+  await expect(page.locator('#case-description')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
 for (const id of CASE_ORDER) {
+  test(`exibe as fotos de ${CASE_LABELS[id]} sem ações nos retratos`, async ({ page }, testInfo) => {
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    await expect(page.locator('.suspect-gallery')).toHaveCount(0);
+    await page.locator(`[data-case="${id}"]`).click();
+    const gallery = page.getByRole('list', { name: `Suspeitos — ${CASE_LABELS[id]}` });
+    const portraits = gallery.getByRole('img');
+    await expect(portraits).toHaveCount(CASES[id].suspects.length);
+    for (const suspect of CASES[id].suspects) {
+      await expect(gallery.getByRole('img', { name: `Foto de ${suspect.name}`, exact: true })).toBeVisible();
+    }
+    await expect.poll(() => portraits.evaluateAll(images => images.every(img => img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0))).toBe(true);
+    await expect(page.locator('#case-description, #open-suspects')).toHaveCount(0);
+    await expect(gallery.getByRole('button')).toHaveCount(0);
+    await expect(gallery.getByRole('link')).toHaveCount(0);
+    await portraits.first().click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(page.locator('#case-view')).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('suspects-desktop.png'), fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    await page.screenshot({ path: testInfo.outputPath('suspects-mobile.png'), fullPage: true });
+    await page.locator('#open-guess').click();
+    await expect(page.locator('#guess-view')).toBeVisible();
+    await expect(page.locator('.suspect-gallery')).toHaveCount(0);
+    await page.locator('#back-to-case').click();
+    await expect(gallery).toBeVisible();
+    await page.locator('#case-view').getByRole('button', { name: 'Voltar', exact: true }).click();
+    await expect(page.locator('#home-view')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test(`resolve ${CASE_LABELS[id]} apenas com o culpado e código corretos`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -121,7 +156,8 @@ test('colar, apagar e filtrar o código funciona com inputs controlados', async 
 test('modais mantêm foco e Escape retorna do depoimento para os suspeitos', async ({ page }) => {
   await page.goto('/');
   await page.locator('[data-case="Martelo"]').click();
-  await page.locator('#open-suspects').click();
+  await page.locator('#open-guess').click();
+  await page.locator('#change-guess').click();
   await expect(page.locator('#suspect-list button').first()).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   await expect(page.locator('#close-suspects')).toBeFocused();
@@ -132,7 +168,7 @@ test('modais mantêm foco e Escape retorna do depoimento para os suspeitos', asy
   await page.keyboard.press('Escape');
   await expect(page.locator('#suspects-modal')).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.locator('#open-suspects')).toBeFocused();
+  await expect(page.locator('#change-guess')).toBeFocused();
 });
 
 test('o visualizador 3D carrega pelo npm e mantém os atalhos e controles', async ({ page }, testInfo) => {

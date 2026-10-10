@@ -474,16 +474,62 @@ h1 {
     0 0 12px rgba(255,255,255,.12);
 }
 
-.description-panel {
-  min-height: 132px;
-  padding: clamp(20px, 3vw, 28px);
+.case-panel {
+  width: 100%;
+  gap: clamp(28px, 4vw, 40px);
+}
+
+.case-panel .screen-topbar {
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.suspect-gallery {
+  --portrait-gap: clamp(14px, 2vw, 24px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--portrait-gap);
+  list-style: none;
+}
+
+.suspect-portrait {
+  flex: 0 1 calc((100% - 4 * var(--portrait-gap)) / 5);
+  min-width: 0;
+  max-width: 228px;
+  overflow: hidden;
+  padding: 4px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 9px;
+  background: rgba(0,0,0,.4);
+  box-shadow: 0 16px 28px rgba(0,0,0,.4);
+}
+
+.suspect-portrait img {
   display: block;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 8px;
-  background: rgba(0,0,0,.18);
-  color: rgba(238,238,238,.78);
-  font-size: clamp(.98rem, 1.7vw, 1.08rem);
-  line-height: 1.72;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.case-panel .actions-row { justify-content: center; }
+
+.case-panel #open-guess { min-width: 180px; }
+
+@media (max-width: 1000px) {
+  .suspect-portrait { flex-basis: calc((100% - 2 * var(--portrait-gap)) / 3); }
+}
+
+@media (max-width: 640px) {
+  .case-panel { padding: 20px 16px; }
+  .case-panel .screen-topbar { flex-wrap: wrap; gap: 16px; padding-bottom: 20px; }
+  .case-panel .screen-title { font-size: clamp(2.8rem, 10vw, 4.2rem); letter-spacing: .08em; }
+  .suspect-portrait { flex-basis: calc((100% - var(--portrait-gap)) / 2); padding: 3px; }
+}
+
+@media (max-width: 340px) {
+  .suspect-portrait { flex-basis: 100%; }
 }
 
 .markdown-body > :first-child { margin-top: 0; }

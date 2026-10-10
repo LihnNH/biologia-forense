@@ -35,7 +35,7 @@ export default function App() {
     <Background />
     <main className="page" inert={Boolean(state.modal)}>
       <section {...screenProps('home')}><Home onCase={id => dispatch({ type: 'case', id })} onInfo={() => dispatch({ type: 'info' })} /></section>
-      <section {...screenProps('case')}><CaseScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} onSuspects={openSuspects} onGuess={() => dispatch({ type: 'navigate', view: 'guess' })} /></section>
+      <section {...screenProps('case')}>{state.view === 'case' && <CaseScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} onGuess={() => dispatch({ type: 'navigate', view: 'guess' })} />}</section>
       <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={Boolean(state.modal)} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onSuspects={openSuspects} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('info')}>{state.infoVisited && <Suspense fallback={<p className="dna-3d-status" role="status">Carregando visualizador...</p>}><DnaViewer active={state.view === 'info'} onBack={() => dispatch({ type: 'closeInfo' })} /></Suspense>}</section>
       <section {...screenProps('done')}><ResultScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} /></section>

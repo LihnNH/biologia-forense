@@ -9,7 +9,6 @@ export interface Suspect {
 }
 
 export interface CaseData {
-  description: string;
   suspects: Suspect[];
 }
 
@@ -30,30 +29,6 @@ export const CASE_LABELS: Record<CaseId, string> = {
 
 export const CASES: Record<CaseId, CaseData> = {
   Veneno: {
-    description: String.raw`## Descrição
-
-Era uma sexta-feira, por volta das **23h50**, e o **Bar Central**, em Belo Horizonte, estava cheio. O movimento começava a diminuir, mas ainda havia clientes conversando e funcionários encerrando o expediente.
-
-O empresário **Fernando Azevedo**, de 46 anos, frequentava o bar quase todas as semanas e costumava se sentar no balcão.
-
-Naquela noite, Fernando pediu mais um drink antes de ir embora. Poucos minutos depois de beber, começou a passar mal e caiu diante dos outros clientes.
-
-O SAMU foi acionado imediatamente, mas Fernando não resistiu.
-
-Após os exames realizados pela perícia, foi constatado que havia uma substância tóxica em sua bebida.
-
-Como o copo permaneceu praticamente o tempo todo sobre o balcão, qualquer pessoa que estivesse próxima poderia ter tido acesso a ele.
-
-Agora, cabe a você analisar as evidências e os depoimentos para descobrir quem adulterou a bebida.
-
-## Evidências
-
-- Apenas o copo da vítima continha a substância tóxica.
-- A garrafa usada para preparar o drink não estava contaminada.
-- O copo apresentava impressões digitais da vítima e do bartender.
-- Um guardanapo amassado foi encontrado ao lado do banco onde Fernando estava sentado.
-- As câmeras mostravam o balcão apenas parcialmente, deixando alguns pontos cegos.
-- Testemunhas afirmaram que Fernando deixou seu copo sozinho por alguns minutos enquanto foi ao banheiro.`,
     suspects: [
       {
         name: 'Ricardo Gomes',
@@ -99,30 +74,6 @@ Agora, cabe a você analisar as evidências e os depoimentos para descobrir quem
   },
 
   Faca: {
-    description: String.raw`## Descrição
-
-Era uma terça-feira, por volta das **22h40**, e o restaurante **Sabor da Serra**, em Curitiba, já estava quase encerrando o expediente. Restavam apenas alguns clientes terminando o jantar, enquanto a equipe da cozinha fazia a limpeza e organizava os ingredientes para o dia seguinte.
-
-O ajudante de cozinha **Lucas Ferreira**, de 23 anos, foi enviado ao estoque para buscar uma caixa de legumes que faltava para finalizar o fechamento da cozinha.
-
-Alguns minutos depois, um dos cozinheiros percebeu que Lucas estava demorando para voltar. Ao procurá-lo, encontrou o jovem caído próximo às bancadas de preparo, nos fundos da cozinha.
-
-A Polícia Militar foi acionada imediatamente, e o restaurante foi isolado para o trabalho da perícia.
-
-Os investigadores descobriram que, poucos minutos antes do crime, Lucas havia discutido com um funcionário do restaurante. Além disso, diversos funcionários afirmaram ter visto pessoas entrando e saindo da cozinha durante os últimos minutos do expediente.
-
-Como quase todos os empregados utilizavam as mesmas bancadas e utensílios, a investigação não seria simples.
-
-Agora, cabe a você analisar os depoimentos, observar as evidências e descobrir quem é o responsável.
-
-## Evidências encontradas
-
-- A faca utilizada pertencia ao próprio restaurante.
-- Havia impressões digitais de vários funcionários no cabo da faca.
-- Uma luva descartável foi encontrada na lixeira da cozinha.
-- Marcas de sapatos molhados foram encontradas perto da pia.
-- Um pano de prato com pequenas manchas avermelhadas foi encontrado sobre a bancada (mais tarde constatou-se que eram manchas de molho de tomate).
-- A câmera que filmava a cozinha ficou sem gravação entre **22h31 e 22h38**, devido a uma queda de energia no sistema.`,
     suspects: [
       {
         name: 'Rafael Oliveira',
@@ -188,33 +139,6 @@ Agora, cabe a você analisar os depoimentos, observar as evidências e descobrir
   },
 
   Martelo: {
-    description: String.raw`## Descrição
-
-Era uma sexta-feira, por volta das **15h30**, quando uma equipe de trabalhadores realizava a reforma de uma residência no bairro Jardim das Palmeiras.
-
-O proprietário da casa, **Eduardo Almeida**, de 46 anos, acompanhava o andamento da obra e conversava com os funcionários sobre os últimos ajustes antes da entrega.
-
-Na residência também estava sua filha, **Laura Almeida**, de 14 anos, que havia chegado da escola pouco antes e permaneceu no andar superior da casa.
-
-Enquanto o mestre de obras, os pedreiros e o eletricista trabalhavam em diferentes cômodos, Eduardo entrou sozinho no escritório para atender uma ligação.
-
-Cerca de dez minutos depois, um dos trabalhadores encontrou Eduardo caído no chão, inconsciente, ao lado de um **martelo de carpinteiro** utilizado na própria obra. A vítima apresentava um grave ferimento na cabeça e morreu antes da chegada do socorro.
-
-A Polícia Científica foi acionada imediatamente, e toda a residência foi isolada para o trabalho da perícia.
-
-Todos os presentes afirmaram não ter visto o momento do crime. Como várias pessoas tiveram acesso às ferramentas da obra durante o dia, descobrir o autor não seria uma tarefa simples.
-
-Agora, cabe a você analisar os depoimentos, observar as evidências e descobrir quem matou Eduardo Almeida.
-
-## Evidências encontradas
-
-- O martelo utilizado no crime pertencia à obra.
-- Havia impressões digitais de diversos trabalhadores e do proprietário no cabo do martelo.
-- Pequenos respingos de sangue foram encontrados na manga do moletom de um dos suspeitos.
-- Não havia sinais de luta corporal no escritório.
-- Um banco de madeira estava caído próximo à mesa.
-- O celular da vítima mostrava uma conversa recente com sua filha, marcada apenas pela mensagem: **"Precisamos conversar quando eu chegar."**
-- Uma pulseira quebrada foi encontrada próxima ao corpo.`,
     suspects: [
       {
         name: 'João Batista',
@@ -260,28 +184,6 @@ Agora, cabe a você analisar os depoimentos, observar as evidências e descobrir
   },
 
   Corda: {
-    description: String.raw`## Descrição
-
-Era uma noite fria de domingo, por volta das **21h00**, quando os bombeiros foram acionados para atender a uma ocorrência de suicídio por enforcamento em uma elegante residência no bairro Alto da Boa Vista.
-
-A vítima era **Rogério Martins**, de 52 anos, um empresário bem-sucedido do ramo têxtil.
-
-No momento em que o corpo foi encontrado, a casa estava trancada por dentro e apenas quatro pessoas estavam presentes: sua esposa, Helena Martins; seu sócio e amigo de longa data, Marcos Vinícius; a empregada doméstica, Tereza; e o caseiro, Sebastião.
-
-Foi a esposa quem acionou o socorro, afirmando ter encontrado o marido pendurado por uma corda na viga do teto da biblioteca, após notar a ausência dele na sala de estar.
-
-A princípio, o cenário parecia um clássico e trágico caso de suicídio: Rogério passava por crises financeiras recentes na empresa e a corda utilizada era uma peça náutica que pertencia à decoração da própria casa.
-
-No entanto, a equipe de perícia criminal chegou ao local e, após uma análise minuciosa da cena, percebeu que havia algo profundamente errado. O que parecia um fim trágico revelou ser, na verdade, uma simulação friamente calculada para encobrir um homicídio.
-
-## Evidências encontradas
-
-- A corda utilizada no enforcamento apresentava nós complexos que exigiam conhecimento técnico específico de marinharia, habilidade que Rogério não possuía.
-- A marca da corda no pescoço da vítima estava em uma posição horizontal e única, incompatível com a trajetória inclinada e em formato de V típica de um enforcamento por suspensão voluntária.
-- Havia vestígios de uma substância sedativa (cloridrato de 5-hidroxitriptofano combinado com álcool) no copo de uísque consumido pela vítima pouco antes da morte.
-- Uma pequena escada dobrável de alumínio estava guardada no armário da lavanderia, limpa, mas com traços recentes de poeira da biblioteca em seus pés.
-- O testamento de Rogério havia sido alterado duas semanas antes, excluindo um dos sócios de uma cláusula milionária de benefício em caso de morte súbita.
-- O celular de Rogério estava sobre a mesa de centro, desbloqueado, com uma mensagem apagada da lixeira que dizia: **"Você acha que eu não descobriria o rombo na conta?"**`,
     suspects: [
       {
         name: 'Helena Martins',
