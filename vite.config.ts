@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         index: fromRoot('./index.html'),
         trabalho: fromRoot('./trabalho.html'),
+        debug: fromRoot('./debug/index.html'),
         positions: fromRoot('./debug/positions.html'),
         answers: fromRoot('./debug/gabarito.html'),
       },

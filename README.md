@@ -51,6 +51,7 @@ Quando a aceleração 3D ou o carregamento do modelo falha, a hélice 2D é exib
 
 ## Páginas de apoio
 
+- `/debug/`: menu com acesso às posições do DNA e às respostas dos casos.
 - `/debug/gabarito.html`: soluções e códigos dos quatro casos.
 - `/debug/positions.html`: seleção de posições no modelo e cópia das coordenadas em JSON.
 

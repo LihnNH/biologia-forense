@@ -1,0 +1,47 @@
+.debug-home { max-width: 900px; }
+
+.debug-home h1 { font-size: clamp(3rem, 8vw, 5.8rem); }
+
+.debug-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.debug-link {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(24px, 4vw, 36px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(255,255,255,.06), var(--red-faint)), var(--panel-deep);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.debug-link:hover { border-color: var(--red-bright); }
+
+.debug-link:focus-visible {
+  outline: 3px solid var(--red-bright);
+  outline-offset: 5px;
+}
+
+.debug-link-title {
+  font-family: "Bebas Neue", Impact, sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: .04em;
+}
+
+.debug-link-description { color: var(--muted); line-height: 1.6; }
+
+.debug-link-action {
+  margin-top: auto;
+  padding-top: 8px;
+  color: #ff7a82;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .debug-links { grid-template-columns: 1fr; }
+}
