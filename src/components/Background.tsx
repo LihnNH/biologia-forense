@@ -1,9 +1,9 @@
-export function Background() {
+import { SmokeBackground } from './SmokeBackground';
+
+export function Background({ active }: { active: boolean }) {
   return <>
-    <div className="smoke" aria-hidden="true" />
+    <SmokeBackground active={active} />
     <div className="forensic-noise" aria-hidden="true" />
     <div className="watermark fingerprint" aria-hidden="true" />
-    <div className="watermark molecules" aria-hidden="true" />
-    <div className="blood-haze" aria-hidden="true" />
   </>;
 }

@@ -47,4 +47,3 @@
 
 .page.is-loading { visibility: hidden; }
 body.startup-loading { overflow: hidden; }
-.startup-loading .smoke, .startup-loading .smoke::before, .startup-loading .smoke::after { animation-play-state: paused; }

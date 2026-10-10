@@ -3,15 +3,13 @@ import { CASES, type CaseId } from '../data/cases';
 import { isCorrectGuess } from './investigation';
 
 export type View = 'home' | 'case' | 'guess' | 'info' | 'done';
-export type ModalKind = 'suspects' | 'statement' | 'error' | null;
+export type ModalKind = 'error' | null;
 interface State {
   view: View;
   caseId: CaseId;
   modal: ModalKind;
   guesses: Partial<Record<CaseId, string>>;
   code: string[];
-  activeSuspect: number | null;
-  pickerOrigin: 'case' | 'guess';
   infoOrigin: 'home' | 'guess';
 }
 export type Action =
@@ -19,9 +17,7 @@ export type Action =
   | { type: 'navigate'; view: 'home' | 'case' | 'guess' }
   | { type: 'info' }
   | { type: 'closeInfo' }
-  | { type: 'suspects' }
-  | { type: 'statement'; index: number }
-  | { type: 'mark' }
+  | { type: 'pick'; index: number }
   | { type: 'closeModal' }
   | { type: 'code'; code: string[] }
   | { type: 'verified'; correct: boolean };
@@ -29,7 +25,7 @@ export type Action =
 const emptyCode = () => ['', '', '', ''];
 const initialState: State = {
   view: 'home', caseId: 'Veneno', modal: null, guesses: {}, code: emptyCode(),
-  activeSuspect: null, pickerOrigin: 'case', infoOrigin: 'home',
+  infoOrigin: 'home',
 };
 
 function reducer(state: State, action: Action): State {
@@ -38,6 +34,7 @@ function reducer(state: State, action: Action): State {
     case 'case':
       return { ...state, caseId: action.id, view: 'case', modal: null, code: emptyCode() };
     case 'navigate':
+      if (action.view === 'guess' && !state.guesses[state.caseId]) return state;
       return { ...state, view: action.view, modal: null, code: emptyCode() };
     case 'info':
       return { ...state, view: 'info', modal: null,
@@ -45,23 +42,15 @@ function reducer(state: State, action: Action): State {
         code: pending ? emptyCode() : state.code };
     case 'closeInfo':
       return { ...state, view: state.infoOrigin };
-    case 'suspects':
-      return { ...state, modal: 'suspects', activeSuspect: null,
-        pickerOrigin: state.view === 'guess' ? 'guess' : 'case',
-        code: pending ? emptyCode() : state.code };
-    case 'statement':
-      return { ...state, modal: 'statement', activeSuspect: action.index };
-    case 'mark': {
-      if (state.activeSuspect === null) return state;
-      const suspect = CASES[state.caseId].suspects[state.activeSuspect];
+    case 'pick': {
+      if (state.view !== 'case') return state;
+      const suspect = CASES[state.caseId].suspects[action.index];
       if (!suspect) return state;
       return { ...state, guesses: { ...state.guesses, [state.caseId]: suspect.name },
-        modal: state.pickerOrigin === 'guess' ? null : 'suspects',
-        activeSuspect: null, code: emptyCode() };
+        modal: null, code: emptyCode() };
     }
     case 'closeModal':
-      return { ...state, modal: state.modal === 'suspects' ? null : 'suspects',
-        activeSuspect: null, pickerOrigin: state.modal === 'error' ? 'guess' : state.pickerOrigin };
+      return { ...state, modal: null, view: state.modal === 'error' ? 'case' : state.view };
     case 'code':
       return { ...state, code: action.code };
     case 'verified': {

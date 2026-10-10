@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { CASE_LABELS, type CaseId } from '../data/cases';
 import { sanitizeCode } from '../lib/investigation';
 
-export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verdict, onCode, onBack, onSuspects, onInfo }: {
+export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verdict, onCode, onBack, onInfo }: {
   caseId: CaseId;
   active: boolean;
   blocked: boolean;
@@ -11,7 +11,6 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
   verdict: 'correct' | 'incorrect' | null;
   onCode: (code: string[]) => void;
   onBack: () => void;
-  onSuspects: () => void;
   onInfo: () => void;
 }) {
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
@@ -27,8 +26,7 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
   }
 
   const status = !selectedGuess ? 'Escolha um suspeito antes de inserir o código.'
-    : verdict === 'correct' ? 'Palpite confirmado!'
-    : verdict === 'incorrect' ? 'Palpite não confirmado.' : 'Aguardando código...';
+    : verdict ? 'Verificando palpite...' : 'Aguardando código...';
 
   return <article className="screen-panel">
     <div className="screen-topbar">
@@ -41,10 +39,9 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
           <span className="guess-selection-label">Seu palpite</span>
           <strong className="guess-selection-name" id="guess-selected-name">{selectedGuess || 'Nenhum suspeito marcado'}</strong>
         </div>
-        <button className="helper-link" id="change-guess" type="button" onClick={onSuspects}>{selectedGuess ? 'Trocar suspeito' : 'Escolher suspeito'}</button>
       </div>
       <p className="code-instructions">Digite o código de quatro caracteres obtido na investigação. A verificação acontece automaticamente.</p>
-      <div className={`code-inputs${verdict === 'incorrect' ? ' is-wrong' : ''}`} id="code-inputs" aria-label="Código de quatro caracteres">
+      <div className="code-inputs" id="code-inputs" aria-label="Código de quatro caracteres">
         {['Primeiro', 'Segundo', 'Terceiro', 'Quarto'].map((label, index) => <input
           key={label} ref={element => { inputs.current[index] = element; }}
           className={`code-input${code[index] ? ' filled' : ''}`} type="text" inputMode="text" maxLength={1}
@@ -72,7 +69,7 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
             inputs.current[empty === -1 ? 3 : empty]?.focus();
           }} />)}
       </div>
-      <p className={`code-status${!selectedGuess || verdict === 'incorrect' ? ' is-error' : ''}`} id="code-status" role="status" aria-live="polite">{status}</p>
+      <p className={`code-status${!selectedGuess ? ' is-error' : ''}`} id="code-status" role="status" aria-live="polite">{status}</p>
       <div className="helper-tip">Esqueceu de onde saiu o ATCG?</div>
       <button className="helper-link" id="open-dna-info-guess" type="button" onClick={onInfo}>Ver explicação rápida do DNA</button>
       <button className="action-button sr-only" type="submit" tabIndex={-1}>Verificar código</button>
