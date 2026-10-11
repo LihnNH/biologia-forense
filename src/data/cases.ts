@@ -36,7 +36,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 34,
         statement: String.raw`**Idade:** 34 anos
 
-> "Fui eu quem preparou o drink, mas usei os mesmos ingredientes de sempre. Depois comecei a atender outros clientes. Não fiquei observando o copo dele o tempo todo."`
+> "Fui eu quem preparou o drink, usando os mesmos ingredientes de sempre. Depois, fui atender outros clientes. Lembro que Gustavo passou pelo balcão e que Juliana também esteve por perto enquanto eu estava ocupado."`
       },
       {
         name: 'Vanessa Ribeiro',
@@ -44,7 +44,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 27,
         statement: String.raw`**Idade:** 27 anos
 
-> "Levei alguns petiscos para o Fernando. Quando voltei para recolher os pratos, ele já tinha ido ao banheiro e o copo estava sobre o balcão."`
+> "Levei alguns petiscos para Fernando. Quando voltei para recolher os pratos, ele tinha ido ao banheiro e o copo continuava no balcão, Fernando parecia bem desconfortável com a presença de Gustavo. Juliana estava fechando o caixa, mas, por alguns instantes, não a vi por lá."`
       },
       {
         name: 'Marcelo Silva',
@@ -52,7 +52,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 40,
         statement: String.raw`**Idade:** 40 anos
 
-> "Conheço o Fernando há alguns anos. Conversamos por uns dez minutos e depois fui jogar sinuca com meus amigos."`
+> "Conheço Fernando há alguns anos, e ele sempre vem falando dos conflitos da empresa antiga, principalmente com seu ex sócio, Gustavo. Conversamos por uns dez minutos e depois fui jogar sinuca com meus amigos. Gustavo veio falar comigo e disse que precisava resolver uma questão antiga com Fernando, mas não explicou do que se tratava."`
       },
       {
         name: 'Juliana Costa',
@@ -60,7 +60,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 38,
         statement: String.raw`**Idade:** 38 anos
 
-> "Passei boa parte da noite fechando o caixa. Só fui até o balcão quando ouvi os clientes gritando por socorro."`
+> "Passei boa parte da noite fechando o caixa. Em determinado momento, precisei me afastar para buscar alguns comprovantes. Quando voltei, vi Gustavo perto do balcão, mas achei que estivesse esperando alguém."`
       },
       {
         name: 'Gustavo Almeida',
@@ -68,7 +68,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 45,
         statement: String.raw`**Idade:** 45 anos
 
-> "Encontrei o Fernando por acaso. Tivemos alguns problemas no passado, mas isso ficou para trás. Conversamos rapidamente e depois fui para outra mesa."`
+> "Encontrei Fernando por acaso. Tivemos alguns problemas de trabalho no passado, mas isso ficou para trás. Conversamos rapidamente e depois fui para outra mesa. Não me lembro de ter passado pelo balcão novamente naquela noite."`
       }
     ]
   },
@@ -83,7 +83,7 @@ export const CASES: Record<CaseId, CaseData> = {
         statement: String.raw`**Idade:** 39 anos  
 **Tempo no restaurante:** 11 anos
 
-> "Lucas vinha cometendo erros no trabalho, e hoje discutimos porque ele esqueceu um pedido do estoque. Depois, voltei a preparar os pratos e fui um dos primeiros a chegar quando ouvi os gritos."`
+> "Lucas vinha cometendo erros no trabalho, e hoje discutimos por causa de um pedido do estoque. Depois, continuei preparando os pratos e organizando algumas coisas na cozinha. Quando terminei minhas tarefas, estava indo embora até ouvir Bruno gritando, fui um dos primeiros a chegar ao local e fiquei surpreso ao encontrar Lucas daquela maneira."`
       },
       {
         name: 'Mariana Costa',
@@ -91,9 +91,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 31,
         statement: String.raw`**Idade:** 31 anos
 
-> "Eu estava organizando os alimentos na câmara fria. Ouvi o chef discutindo com o Lucas, mas isso acontece às vezes em cozinhas movimentadas.
->
-> Quando saí da câmara fria, não vi mais o Lucas."`
+> "Eu estava organizando os alimentos na câmara fria, pois precisamos de espaço. Temos uma grande quantidade de legumes, principalmente tomates, já que cozinhamos muitos molhos vermelhos. Ouvi Lucas discutindo com Rafael e não consegui entender, só entendi que Chef ia demiti-lo. Mas, quando saí da câmara fria, vi apenas Rafael lavando as mãos. Além disso, a faca que eu tinha deixado na bancada havia sumido."`
       },
       {
         name: 'Diego Martins',
@@ -101,11 +99,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 26,
         statement: String.raw`**Idade:** 26 anos
 
-> "Entrei na cozinha algumas vezes para buscar os pedidos das últimas mesas.
->
-> Vi o Lucas indo em direção ao estoque carregando uma caixa vazia.
->
-> Depois não o vi mais."`
+> "Entrei na cozinha algumas vezes para buscar pedidos. Vi Lucas indo em direção ao estoque, chateado. Mais tarde, peguei a faca de Mariana emprestada para entregar a um cliente que havia derrubado a sua. No corredor, encontrei Rafael e entreguei a faca para ele, já que depois ele voltaria à cozinha."`
       },
       {
         name: 'Patrícia Alves',
@@ -113,9 +107,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 29,
         statement: String.raw`**Idade:** 29 anos
 
-> "Eu permaneci no caixa fechando as contas dos clientes.
->
-> Não costumo entrar na cozinha, apenas ouvi uma discussão mais cedo, mas não consegui entender o motivo."`
+> "Eu estava no caixa fechando as contas dos clientes. Lembro que as câmeras já tinham apresentado falhas em outra ocasião, quando roubaram nosso restaurante. Só vi Diego ajudando um cliente para melhorar a reputação do nosso restaurante e, depois, entregando algo para Rafael. Quando olhei para o lado, Rafael passou por mim em direção ao estoque para pegar os tomates que haviam acabado, segundo ele."`
       },
       {
         name: 'Bruno Santos',
@@ -123,7 +115,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 42,
         statement: String.raw`**Idade:** 42 anos
 
-> "Eu estava lavando o piso da cozinha perto do horário de fechar, por conta disso, o chão estava molhado. Quando encontrei o Lucas caído, saí correndo para chamar ajuda."`
+> "Eu estava lavando o piso da cozinha perto do horário de fechar. Ouvi Rafael desabafar com Mariana que resolveria algum problema com Lucas naquela noite. Depois, encontrei o corpo de Lucas com a faca cravada nele, quando fui limpar os fundos do restaurante."`
       }
     ]
   },
@@ -136,7 +128,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 52,
         statement: String.raw`**Idade:** 52 anos
 
-> "O Eduardo reclamava bastante do atraso da reforma e pressionava todo mundo. Na hora do crime eu estava conferindo a entrega de cimento na frente da casa. Só entrei quando ouvi o pessoal gritando."`
+> "O Eduardo reclamava bastante do atraso da reforma e pressionava todo mundo. Na hora do crime eu estava conferindo a entrega de cimento na frente da casa. Só entrei quando ouvi o pessoal gritando. Laura foi a última a descer as escadas com a correria"`
       },
       {
         name: 'Carlos Henrique',
@@ -144,7 +136,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 38,
         statement: String.raw`**Idade:** 38 anos
 
-> "Passei a tarde trabalhando na área externa. Peguei um martelo mais cedo para fixar algumas formas de madeira, mas depois devolvi. Nem entrei no escritório."`
+> "Passei a tarde trabalhando na área externa. Usei um martelo para ajustar algumas formas de madeira e depois deixei a ferramenta perto da entrada. Vi algumas pessoas circulando pela casa, mas estava ocupado demais para prestar atenção. Só percebi que algo tinha acontecido quando começaram a gritar."`
       },
       {
         name: 'Marcelo Lima',
@@ -152,7 +144,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 40,
         statement: String.raw`**Idade:** 40 anos
 
-> "Eu estava terminando a instalação das tomadas do segundo andar. Vi a Laura subir para o quarto quando ela chegou da escola. Depois disso não vi mais ninguém."`
+> "Estava instalando as tomadas do segundo andar quando vi Laura chegar da escola. Ela subiu para o quarto, mas algum tempo depois ouvi passos descendo a escada. Não consegui ver quem era. Também escutei uma discussão no andar de baixo, mas achei que fosse um assunto particular da família.”`
       },
       {
         name: 'Renata Souza',
@@ -160,7 +152,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 35,
         statement: String.raw`**Idade:** 35 anos
 
-> "Fui conferir algumas medidas da cozinha. O Eduardo parecia preocupado e disse que precisava resolver um assunto de família ainda naquela tarde."`
+> "Fui conferir algumas medidas da cozinha. Eduardo parecia preocupado e comentou que precisava resolver um problema familiar. Mais tarde, ouvi vozes alteradas vindo da direção do escritório. Não consegui entender a conversa, mas uma das vozes parecia ser de uma mulher. Preferi não me envolver."`
       },
       {
         name: 'Laura Almeida',
@@ -168,7 +160,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 18,
         statement: String.raw`**Idade:** 18 anos
 
-> "Cheguei do colégio e subi para o meu quarto. Eu precisava conversar com meu pai, mas desisti. Coloquei fones de ouvido e fiquei lá em cima. Só desci quando ouvi as pessoas correndo."`
+> "Cheguei do colégio e fui direto para o quarto. Estava chateada com algumas coisas que descobri recentemente e não queria conversar com ninguém. Coloquei meus fones de ouvido e tentei me distrair. Só desci quando ouvi a movimentação das pessoas. Não sei o que aconteceu no escritório."`
       }
     ]
   },
@@ -181,7 +173,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 48,
         statement: String.raw`**Idade:** 48 anos
 
-> "O Rogério estava muito estressado por causa da empresa ultimamente, bebia todas as noites para tentar dormir. Eu estava no andar de cima vendo TV quando percebi que ele demorava a voltar. Quando desci, vi aquela cena horrível."`
+> "Rogério andava muito estressado por causa da empresa. Ultimamente, bebia quase todas as noites para conseguir dormir. Naquela noite, percebi que ele estava especialmente preocupado depois de conversar com Marcos. Subi para assistir televisão e, quando desci para procurá-lo, encontrei aquela cena horrível. Não consigo acreditar no que aconteceu."`
       },
       {
         name: 'Marcos Vinícius',
@@ -189,7 +181,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 50,
         statement: String.raw`**Idade:** 50 anos
 
-> "Fui convidado para jantar e, depois, estava no escritório cuidando de documentos da sociedade quando ouvi os gritos de Helena. Fiquei chocado. Rogério nunca deu sinais de que tiraria a própria vida, apesar da pressão insuportável."`
+> "Fui convidado para jantar e aproveitei para conversar com Rogério sobre alguns documentos da sociedade. Ele estava muito nervoso, chegou a beber enquanto discutíamos os problemas da empresa. Depois fui ao escritório organizar alguns papéis. Só soube do ocorrido quando ouvi Helena gritando. Rogério estava passando por muita pressão, mas nunca imaginei que chegaria a esse ponto."`
       },
       {
         name: 'Tereza',
@@ -197,7 +189,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 41,
         statement: String.raw`**Idade:** 41 anos
 
-> "Eu já tinha terminado o meu turno e estava arrumando a cozinha antes de ir para o quarto dos fundos onde durmo. Só saí quando a patroa começou a gritar por socorro."`
+> "Terminei de arrumar a cozinha depois do jantar. Lembro que Marcos perguntou onde ficavam algumas coisas da lavanderia, mas não achei estranho, porque ele frequentava a casa havia anos. Mais tarde, ouvi um barulho de algo sendo arrastado, mas pensei que fosse Sebastião trabalhando. Quando a patroa gritou, saí correndo para ajudar."`
       },
       {
         name: 'Sebastião',
@@ -205,7 +197,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 58,
         statement: String.raw`**Idade:** 58 anos
 
-> "Eu estava na edícula cuidando das ferramentas e do portão eletrônico. Vi Marcos chegar por volta das 19h. Às vezes ajudava o patrão com as cordas da decoração náutica, mas fazia tempo que não mexia nelas."`
+> "Passei boa parte da noite na área dos fundos da casa, cuidando das ferramentas e do portão eletrônico. Vi Marcos chegar por volta das sete. Eu costumava ajudar Rogério com as cordas da decoração náutica, mas ele e Marcos também entendiam bastante do assunto. Naquela noite, percebi que a escada da lavanderia não estava no lugar de costume. Pensei que alguém tivesse usado para algum reparo."`
       }
     ]
   }
@@ -217,28 +209,28 @@ export const CASE_RESULTS: Record<CaseId, CaseResult> = {
     culprit: 'Gustavo Almeida',
     explanation: String.raw`**Gustavo Almeida**, ex-sócio de Fernando, adulterou o drink enquanto a vítima foi ao banheiro e deixou o copo sozinho.
 
-Fernando estava prestes a processá-lo por **desvio de dinheiro**. A garrafa estava limpa e apenas o copo da vítima continha a substância tóxica, mostrando que o veneno foi colocado diretamente na bebida durante o ponto cego das câmeras.`
+Fernando estava prestes a processá-lo por desvio de dinheiro. A garrafa estava limpa e apenas o copo da vítima continha a substância tóxica, mostrando que o veneno foi colocado diretamente na bebida durante o ponto cego das câmeras.`
   },
   Faca: {
     code: 'TAGC',
     culprit: 'Rafael Oliveira',
     explanation: String.raw`O culpado é **Rafael Oliveira**, o chef de cozinha.
 
-Lucas havia descoberto que Rafael desviava ingredientes caros do restaurante para vendê-los por fora e ameaçou denunciá-lo. Aproveitando a falha das câmeras, o chef usou uma faca do próprio restaurante e tentou se esconder entre as digitais de vários funcionários e as pistas comuns da cozinha.`
+Lucas havia descoberto que Rafael desviava dinheiro do restaurante para se usufruir e ameaçou denunciá-lo. Aproveitando a falha das câmeras, o chef pegou escondido a faca do próprio restaurante, e chamou Lucas para conversar no estoque, Lucas imaginava ser demitido, mas o destino verdadeiro foi a sua morte`
   },
   Martelo: {
     code: 'GCAT',
     culprit: 'Laura Almeida',
     explanation: String.raw`A responsável é **Laura Almeida**, filha da vítima.
 
-Depois de descobrir a traição do pai e as agressões sofridas pela mãe, Laura foi confrontá-lo no escritório e o atingiu com o martelo durante a discussão. A mensagem no celular, a pulseira quebrada e os respingos de sangue no moletom conectaram Laura diretamente à cena.`
+Depois de descobrir a traição do pai e as agressões sofridas pela mãe, Laura foi confrontá-lo no escritório e o atingiu com o martelo durante a discussão. A mensagem no celular, a pulseira quebrada e o sangue na camiseta de Laura a ligam diretamente à cena do crime.`
   },
   Corda: {
     code: 'ATCG',
     culprit: 'Marcos Vinícius',
     explanation: String.raw`O culpado é **Marcos Vinícius**, sócio e antigo amigo da vítima.
 
-Rogério havia descoberto um desvio milionário cometido por Marcos. Ele sedou a vítima, usou a escada da lavanderia e amarrou a corda com nós de marinheiro para simular um suicídio. A marca horizontal no pescoço, o sedativo e o conhecimento náutico desmontaram a encenação.`
+Rogério havia descoberto um desvio milionário cometido por Marcos. Ele sedou a vítima, usou a escada da lavanderia e amarrou a corda com nós de marinheiro para simular um suicídio. A marca horizontal no pescoço, o sedativo no corpo e seu conhecimento náutico exposeram a encenação.`
   }
 };
 
