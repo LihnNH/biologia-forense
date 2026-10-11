@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useReducer } from 'react';
-import { CASES, type CaseId } from '../data/cases';
-import { isCorrectGuess } from './investigation';
+import { CASES, CASE_RESULTS, type CaseId } from '../data/cases';
+import { isCorrectCode } from './investigation';
 import { FINALE_TIMING, NEXT_FINALE_PHASE, type FinalePhase } from './finale';
 
 export type View = 'home' | 'case' | 'guess' | 'info' | 'done';
@@ -13,6 +13,7 @@ interface State {
   code: string[];
   infoOrigin: 'home' | 'guess';
   finalePhase: FinalePhase;
+  incorrectSuspect: boolean;
 }
 export type Action =
   | { type: 'case'; id: CaseId }
@@ -30,6 +31,7 @@ const initialState: State = {
   view: 'home', caseId: 'Veneno', modal: null, guesses: {}, code: emptyCode(),
   infoOrigin: 'home',
   finalePhase: 'idle',
+  incorrectSuspect: false,
 };
 
 function reducer(state: State, action: Action): State {
@@ -38,10 +40,10 @@ function reducer(state: State, action: Action): State {
   const pending = state.code.every(Boolean);
   switch (action.type) {
     case 'case':
-      return { ...state, caseId: action.id, view: 'case', modal: null, code: emptyCode(), finalePhase: 'idle' };
+      return { ...state, caseId: action.id, view: 'case', modal: null, code: emptyCode(), finalePhase: 'idle', incorrectSuspect: false };
     case 'navigate':
       if (action.view === 'guess' && !state.guesses[state.caseId]) return state;
-      return { ...state, view: action.view, modal: null, code: emptyCode(), finalePhase: 'idle' };
+      return { ...state, view: action.view, modal: null, code: emptyCode(), finalePhase: 'idle', incorrectSuspect: false };
     case 'info':
       return { ...state, view: 'info', modal: null,
         infoOrigin: state.view === 'guess' ? 'guess' : 'home',
@@ -61,7 +63,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, code: action.code };
     case 'verified': {
       if (state.view !== 'guess') return state;
-      if (action.correct) return { ...state, finalePhase: 'fade' };
+      if (action.correct) return { ...state, finalePhase: 'fade',
+        incorrectSuspect: state.guesses[state.caseId] !== CASE_RESULTS[state.caseId].culprit };
       const guesses = { ...state.guesses };
       delete guesses[state.caseId];
       return { ...state, guesses, code: emptyCode(),
@@ -83,7 +86,7 @@ export function useInvestigation() {
   const selectedGuess = state.guesses[state.caseId] ?? '';
   const complete = state.code.every(Boolean);
   const verdict: 'correct' | 'incorrect' | null = selectedGuess && complete
-    ? (isCorrectGuess(state.caseId, selectedGuess, state.code.join('')) ? 'correct' : 'incorrect')
+    ? (isCorrectCode(state.caseId, state.code.join('')) ? 'correct' : 'incorrect')
     : null;
 
   useEffect(() => {

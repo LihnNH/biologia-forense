@@ -102,8 +102,24 @@ for (const id of CASE_ORDER) {
     await expect(page.locator('#result-explanation')).not.toContainText('both parts of the investigation');
     await expect(page.locator('#result-explanation')).not.toContainText(/The culprit is|The person responsible is/);
     await expect(page.locator('#culprit-name')).toHaveText(CASE_RESULTS[id].culprit);
+    await expect(page.locator('#result-guess-notice')).toHaveCount(0);
   });
 }
+
+test('avisa em inglês quando o código está correto mas o suspeito está errado', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('forensic-language', 'en'));
+  await page.goto('/');
+  await page.locator('[data-case="Faca"]').click();
+  await page.locator('#open-pick').click();
+  await page.getByRole('button', { name: 'Select Diego Martins as your suspect', exact: true }).click();
+  await page.locator('#open-guess').click();
+  for (let index = 0; index < 4; index++) await page.locator('.code-input').nth(index).fill(CASE_RESULTS.Faca.code[index]);
+  await expect(page.locator('.finale-screen')).toHaveAttribute('data-phase', 'complete');
+  await expect(page.locator('#result-title')).toHaveText(`${caseLabelsEn.Faca}: case solved`);
+  await expect(page.locator('#culprit-name')).toHaveText(CASE_RESULTS.Faca.culprit);
+  await expect(page.locator('#result-guess-notice')).toHaveText('You got the code right, but your suspect guess was wrong.');
+  await expect(page.getByRole('alertdialog')).toHaveCount(0);
+});
 
 test('traduz o erro e o DNA, incluindo o ponto selecionado e a licença', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('forensic-language', 'en'));

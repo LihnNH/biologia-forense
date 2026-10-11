@@ -6,7 +6,7 @@ import { FINALE_TIMING, type FinalePhase } from '../lib/finale';
 import { useI18n } from '../i18n/I18n';
 import { Markdown } from './Markdown';
 
-export function ResultScreen({ caseId, phase, onHome }: { caseId: CaseId; phase: FinalePhase; onHome: () => void }) {
+export function ResultScreen({ caseId, phase, incorrectSuspect, onHome }: { caseId: CaseId; phase: FinalePhase; incorrectSuspect: boolean; onHome: () => void }) {
   const { t, caseLabels, caseResults } = useI18n();
   const result = caseResults[caseId];
   const nameImage = suspectNameImages[caseId][result.culprit];
@@ -63,6 +63,7 @@ export function ResultScreen({ caseId, phase, onHome }: { caseId: CaseId; phase:
           </strong>
         </span>
       </p>
+      {incorrectSuspect && <p className="finale-guess-notice" id="result-guess-notice">{t('incorrectSuspectNotice')}</p>}
       <Markdown className="result-explanation finale-explanation" id="result-explanation" text={explanation} />
       <button className="action-button finale-home" type="button" id="done-home" disabled={phase !== 'complete'} onClick={onHome}>
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>

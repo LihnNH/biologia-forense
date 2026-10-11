@@ -27,6 +27,10 @@ a aplicação utiliza a representação 2D.
 
 A aplicação está disponível em `/` e em `/trabalho.html`, para manter o endereço antigo.
 
+O código correto libera a solução do caso mesmo quando o suspeito escolhido está
+errado. Nesse caso, a tela final avisa que o palpite estava incorreto e mostra o
+culpado real. Código errado não libera a solução.
+
 ## Verificação
 
 ```sh

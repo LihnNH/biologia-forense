@@ -89,7 +89,7 @@ export default function App() {
       }} />}</section>
       <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={finaleTransitioning || Boolean(state.modal) || settingsModalOpen} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('info')}><DnaViewer active={!loading && state.view === 'info'} onPrepared={onDnaPrepared} onBack={() => dispatch({ type: 'closeInfo' })} /></section>
-      <section {...screenProps('done')}>{state.view === 'done' && <ResultScreen caseId={state.caseId} phase={state.finalePhase} onHome={() => dispatch({ type: 'navigate', view: 'home' })} />}</section>
+      <section {...screenProps('done')}>{state.view === 'done' && <ResultScreen caseId={state.caseId} phase={state.finalePhase} incorrectSuspect={state.incorrectSuspect} onHome={() => dispatch({ type: 'navigate', view: 'home' })} />}</section>
     </main>
     {(state.finalePhase === 'fade' || state.finalePhase === 'black') && <div className={`finale-blackout is-${state.finalePhase}`} data-phase={state.finalePhase} aria-hidden="true" />}
     {loading && <StartupLoading completed={assets.completed + Number(dnaPrepared)} total={assets.total + 1} failed={assets.failed} waitingForDna={!dnaPrepared}

@@ -150,6 +150,18 @@ body.finale-title .forensic-noise { opacity: 0; transition: none; }
   object-fit: contain;
 }
 
+.finale-guess-notice {
+  width: 100%;
+  padding: 12px 18px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 8px;
+  background: rgba(255,255,255,.035);
+  color: rgba(238,238,238,.78);
+  font-size: .9rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
 .finale-explanation {
   width: 100%;
   color: rgba(238,238,238,.72);

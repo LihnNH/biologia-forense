@@ -144,7 +144,7 @@ for (const id of CASE_ORDER) {
     expect(errors).toEqual([]);
   });
 
-  test(`resolve ${CASE_LABELS[id]} apenas com o culpado e código corretos`, async ({ page }, testInfo) => {
+  test(`resolve ${CASE_LABELS[id]} com código e palpite corretos`, async ({ page }, testInfo) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -163,6 +163,7 @@ for (const id of CASE_ORDER) {
     await expect(page.locator('.finale-screen')).toHaveAttribute('data-phase', 'complete');
     await expect(page.locator('.finale-status')).toHaveCSS('opacity', '1');
     await expect(page.locator('.finale-content')).toHaveCSS('opacity', '1');
+    await expect(page.locator('#result-guess-notice')).toHaveCount(0);
     await expect(page.locator('canvas.smoke')).toBeVisible();
     await expect.poll(() => readFinaleSmokeTint(page)).toBe(1);
     await expect(page.locator('#result-explanation > p').first()).toBeVisible();
@@ -184,10 +185,44 @@ for (const id of CASE_ORDER) {
     await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(0);
     expect(errors).toEqual([]);
   });
+
+  test(`resolve ${CASE_LABELS[id]} com código correto mesmo com palpite errado`, async ({ page }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto('/');
+    await page.locator(`[data-case="${id}"]`).click();
+    const wrongSuspect = CASES[id].suspects.find(suspect => suspect.name !== CASE_RESULTS[id].culprit)!;
+    await chooseSuspect(page, wrongSuspect.name);
+    await page.locator('#open-guess').click();
+    await enterCode(page, CASE_RESULTS[id].code.toLowerCase());
+    await expect(page.locator('.finale-screen')).toHaveAttribute('data-phase', 'complete');
+    await expect(page.locator('.finale-content')).toHaveCSS('opacity', '1');
+    await expect(page.locator('.finale-status')).toHaveCSS('opacity', '1');
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
+    await expect(page.locator('#result-title')).toContainText(`${CASE_LABELS[id]}: caso solucionado`);
+    await expect(page.locator('#culprit-name')).toHaveText(CASE_RESULTS[id].culprit);
+    await expect(page.locator('.finale-artwork img')).toHaveAttribute('alt', `Foto de ${CASE_RESULTS[id].culprit}`);
+    await expect(page.locator('#result-guess-notice')).toBeVisible();
+    await expect(page.locator('#result-guess-notice')).toHaveText('Você acertou o código, mas errou o palpite sobre o culpado.');
+    await expect(page.locator('#result-explanation > p').first()).toBeVisible();
+    await expect(page.locator('#done-home')).toBeEnabled();
+    await page.screenshot({ path: testInfo.outputPath('solution-wrong-suspect-desktop.png'), fullPage: true });
+
+    if (id === 'Faca') {
+      // The warning must not leak into a later investigation with the right suspect.
+      await page.locator('#done-home').click();
+      await page.locator('[data-case="Faca"]').click();
+      await chooseSuspect(page, CASE_RESULTS.Faca.culprit);
+      await page.locator('#open-guess').click();
+      await enterCode(page, CASE_RESULTS.Faca.code);
+      await expect(page.locator('.finale-screen')).toHaveAttribute('data-phase', 'complete');
+      await expect(page.locator('#result-guess-notice')).toHaveCount(0);
+    }
+  });
 }
 
-for (const failure of ['code', 'suspect', 'both'] as const) {
-  test(`não revela qual parte falhou quando o erro está em ${failure}`, async ({ page }) => {
+for (const failure of ['code', 'both'] as const) {
+  test(`bloqueia a solução com código errado quando o erro está em ${failure}`, async ({ page }) => {
     await page.goto('/');
     await page.locator('[data-case="Faca"]').click();
     const suspect = failure === 'code' ? CASE_RESULTS.Faca.culprit : CASES.Faca.suspects.find(s => s.name !== CASE_RESULTS.Faca.culprit)!.name;
@@ -195,12 +230,13 @@ for (const failure of ['code', 'suspect', 'both'] as const) {
     await page.locator('#open-guess').click();
     await expect(page.locator('#guess-selected-name')).toHaveText(suspect);
     await expect(page.locator('#code-status')).toHaveText('Aguardando código...');
-    const wrongOrRightCode = failure === 'suspect' ? CASE_RESULTS.Faca.code : 'AAAA';
-    for (let index = 0; index < 3; index++) await page.locator('.code-input').nth(index).fill(wrongOrRightCode[index]);
+    for (let index = 0; index < 3; index++) await page.locator('.code-input').nth(index).fill('A');
     await expect(page.getByRole('alertdialog')).toHaveCount(0);
     await expect(page.locator('#code-status')).toHaveText('Aguardando código...');
-    await enterCode(page, failure === 'suspect' ? CASE_RESULTS.Faca.code : 'AAAA');
+    await enterCode(page, 'AAAA');
     await expect(page.getByRole('alertdialog')).toBeVisible();
+    await expect(page.locator('#done-view')).toBeHidden();
+    await expect(page.locator('.finale-blackout')).toHaveCount(0);
     await expect(page.locator('#guess-error-copy')).toHaveText('Alguma parte do seu palpite não confere com as evidências. Revise os suspeitos deste caso e tente novamente.');
     await page.keyboard.press('Escape');
     await expect(page.locator('#case-view')).toBeVisible();
