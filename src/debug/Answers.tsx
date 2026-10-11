@@ -8,7 +8,7 @@ import '../styles/answers.css';
 function Answers() {
   return <main className="page">
     <header>
-      <img className="dna-mark" src={artwork.dna} alt="" aria-hidden="true" />
+      <img draggable={false} className="dna-mark" src={artwork.dna} alt="" aria-hidden="true" />
       <h1>Gabarito Forense</h1>
       <div className="title-line" aria-hidden="true" />
       <p className="subtitle">Soluções dos quatro casos</p>

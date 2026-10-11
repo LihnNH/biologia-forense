@@ -60,7 +60,7 @@ export function CaseScreen({ caseId, onHome, activePortrait, onPortrait, selecte
             setSelecting(false);
           } else onPortrait(index, event.currentTarget);
         }}>
-          <img src={suspectPortraits[caseId][suspect.name]} alt={t('photo', { name: suspect.name })} width={900} height={1420} decoding="async" />
+          <img draggable={false} src={suspectPortraits[caseId][suspect.name]} alt={t('photo', { name: suspect.name })} width={900} height={1420} decoding="async" />
         </button>
       </li>)}
     </ul>

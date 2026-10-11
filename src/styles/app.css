@@ -1,3 +1,5 @@
+@import './images.css';
+
 :root {
   --bg: #050607;
   --panel: rgba(20, 22, 24, 0.72);

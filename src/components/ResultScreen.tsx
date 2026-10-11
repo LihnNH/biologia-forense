@@ -42,7 +42,7 @@ export function ResultScreen({ caseId, phase, incorrectSuspect, onHome }: { case
 
   return <article className={`finale-screen is-${phase}`} data-phase={phase} ref={screen} style={screenStyle}>
     <div className="finale-artwork">
-      <img src={finaleImages[caseId]} alt={t('photo', { name: result.culprit })} />
+      <img draggable={false} src={finaleImages[caseId]} alt={t('photo', { name: result.culprit })} />
     </div>
     <header className="finale-heading">
       <h2 className="finale-title" id="result-title" ref={heading} tabIndex={-1}>
@@ -57,7 +57,7 @@ export function ResultScreen({ caseId, phase, incorrectSuspect, onHome }: { case
         <span className="finale-culprit-signature">
           <strong className="finale-culprit-name" id="culprit-name">
             {nameImage ? <>
-              <img className="finale-name-image" src={nameImage} alt="" />
+              <img draggable={false} className="finale-name-image" src={nameImage} alt="" />
               <span className="sr-only">{result.culprit}</span>
             </> : result.culprit}
           </strong>

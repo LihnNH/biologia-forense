@@ -44,7 +44,7 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
           <span className="guess-selection-label">{t('yourGuess')}</span>
           <strong className="guess-selection-name" id="guess-selected-name">
             {selectedNameImage ? <>
-              <img className="guess-selection-name-image" src={selectedNameImage} alt="" />
+              <img draggable={false} className="guess-selection-name-image" src={selectedNameImage} alt="" />
               <span className="sr-only">{selectedGuess}</span>
             </> : selectedGuess || t('noSuspect')}
           </strong>

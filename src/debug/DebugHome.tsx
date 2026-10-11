@@ -8,7 +8,7 @@ import '../styles/debug-home.css';
 function DebugHome() {
   return <main className="page debug-home">
     <header>
-      <img className="dna-mark" src={artwork.dna} alt="" aria-hidden="true" />
+      <img draggable={false} className="dna-mark" src={artwork.dna} alt="" aria-hidden="true" />
       <h1>Ferramentas de apoio</h1>
       <div className="title-line" aria-hidden="true" />
       <p className="subtitle">Biologia Forense</p>

@@ -127,6 +127,6 @@ export function PortraitModal({ origin, suspect, image, onClose }: {
         <button className="back-button" type="button" onClick={requestClose}>{t('close')}</button>
       </div>
     </div>
-    <div className="portrait-flight" ref={flight} aria-hidden="true"><img src={image} alt="" /></div>
+    <div className="portrait-flight" ref={flight} aria-hidden="true"><img draggable={false} src={image} alt="" /></div>
   </div>, document.body);
 }
