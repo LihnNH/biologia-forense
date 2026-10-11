@@ -15,6 +15,39 @@ async function enterCode(page: Page, code: string) {
   for (let index = 0; index < 4; index++) await fields.nth(index).fill(code[index]);
 }
 
+test('as setas selecionam a letra anterior ou seguinte e permitem corrigir o código pelo teclado', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-case="Faca"]').click();
+  await chooseSuspect(page, CASE_RESULTS.Faca.culprit);
+  await page.locator('#open-guess').click();
+  const fields = page.locator('.code-input');
+  await page.keyboard.press('ArrowLeft');
+  await expect(fields.nth(0)).toBeFocused();
+  await page.keyboard.type('TAC');
+  await expect(fields.nth(3)).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect(fields.nth(3)).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.type('G');
+  await expect(fields.nth(2)).toHaveValue('G');
+  await expect(fields.nth(3)).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Backspace');
+  await expect(fields.nth(2)).toHaveValue('');
+  await page.keyboard.type('G');
+  await page.keyboard.press('Backspace');
+  await expect(fields.nth(2)).toHaveValue('');
+  await expect(fields.nth(2)).toBeFocused();
+  await fields.nth(0).click();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.type('A');
+  await expect(fields.nth(1)).toHaveValue('A');
+  await expect(fields.nth(2)).toBeFocused();
+  await page.keyboard.type('GC');
+  await expect(page.locator('#done-view')).toBeVisible();
+  await expect(page.locator('#culprit-name')).toHaveText(CASE_RESULTS.Faca.culprit);
+});
+
 async function readFinaleSmokeTint(page: Page) {
   return page.locator('canvas.smoke').evaluate(element => {
     const gl = (element as HTMLCanvasElement).getContext('webgl');
@@ -433,7 +466,7 @@ test('o visualizador 3D carrega pelo npm e mantém os atalhos e controles', asyn
   expect(errors).toEqual([]);
 });
 
-test('exibe a hélice 2D quando WebGL está indisponível', async ({ page }) => {
+test('exibe a imagem 2D quando WebGL está indisponível', async ({ page }) => {
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, ...args: Parameters<typeof original>) {
@@ -444,8 +477,8 @@ test('exibe a hélice 2D quando WebGL está indisponível', async ({ page }) => 
   await page.goto('/');
   await page.locator('#open-dna-info-home').click();
   await expect(page.locator('#dna-webgl-fallback')).toBeVisible();
-  await expect(page.locator('.helix-rung')).toHaveCount(6);
-  await expect(page.locator('#dna-3d-status')).toHaveText('Modo compatível 2D ativo');
+  await expect(page.locator('.dna-static-image')).toBeVisible();
+  await expect(page.locator('#dna-3d-status')).toHaveCount(0);
   await page.locator('#close-dna-info').click();
   await expect(page.locator('#home-view')).toBeVisible();
 });
@@ -455,7 +488,7 @@ test('mantém o fallback 2D quando o arquivo GLB falha', async ({ page }) => {
   await page.goto('/');
   await page.locator('#open-dna-info-home').click();
   await expect(page.locator('#dna-webgl-fallback')).toBeVisible();
-  await expect(page.locator('#dna-fallback-message')).toContainText('não pôde ser aberto');
+  await expect(page.locator('.dna-static-image')).toBeVisible();
 });
 
 test('mantém a entrada antiga e as páginas de apoio em React', async ({ page }) => {

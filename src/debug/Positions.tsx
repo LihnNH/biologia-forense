@@ -2,6 +2,7 @@ import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createDnaScene } from '../lib/dnaScene';
 import type { SavedPoint } from '../data/dna';
+import { DebugNavigation } from './DebugNavigation';
 import '../fonts';
 import '../styles/positions.css';
 
@@ -64,7 +65,7 @@ function Positions() {
   return <main className={`viewer${dragging ? ' dragging' : ''}`} id="viewer" ref={container}>
     <canvas className="webgl" ref={canvas} tabIndex={0} aria-label="DNA 3D para seleção de posições" />
     <div className="topbar">
-      <div className="title-block"><h1>DNA Position Debug</h1><p className="instructions">Clique no modelo para marcar um ponto. Arraste para girar e use a roda do mouse para aproximar.</p></div>
+      <div className="title-block"><DebugNavigation current="positions" /><h1>DNA Position Debug</h1><p className="instructions">Clique no modelo para marcar um ponto. Arraste para girar e use a roda do mouse para aproximar.</p></div>
       <div className="controls">
         <span className="count" id="point-count">{points.length} {points.length === 1 ? 'ponto' : 'pontos'}</span>
         <button type="button" id="copy-positions" disabled={!points.length} onClick={copyPositions}>{copied ? 'Copied!' : 'Copy positions'}</button>

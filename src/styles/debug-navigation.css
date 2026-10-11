@@ -1,0 +1,8 @@
+.debug-navigation { display: grid; justify-items: center; gap: 10px; margin-bottom: 24px; pointer-events: auto; cursor: default; }
+.debug-navigation nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.debug-navigation a { display: inline-flex; align-items: center; min-height: 34px; padding: 6px 12px; border: 1px solid rgba(255,255,255,.16); border-radius: calc(8px * var(--corner-radius-scale, 1)); color: rgba(238,238,238,.7); background: rgba(8,9,10,.75); text-decoration: none; font: 600 .72rem/1.5 Inter, system-ui, sans-serif; }
+.debug-navigation a:hover { border-color: rgba(255,82,96,.65); color: #eee; }
+.debug-navigation a[aria-current="page"] { border-color: rgba(181,29,37,.65); color: #eee; background: rgba(181,29,37,.1); }
+.debug-navigation a:focus-visible { outline: 2px solid #ff5260; outline-offset: 3px; }
+.title-block .debug-navigation { justify-items: start; margin-bottom: 18px; }
+.title-block .debug-navigation nav { justify-content: flex-start; }

@@ -45,7 +45,9 @@ export function PortraitModal({ origin, suspect, image, onClose }: {
     if (exiting.current || !panel.current || !flight.current || !content.current || !backdrop.current) return;
     exiting.current = true;
     setClosing(true);
-    const target = origin.source.querySelector('img')?.getBoundingClientRect() ?? origin.rect;
+    const targetImage = origin.source.querySelector('img');
+    const target = targetImage?.getBoundingClientRect() ?? origin.rect;
+    const targetRadius = getComputedStyle(targetImage ?? origin.source).borderRadius;
     const currentPanelTransform = getComputedStyle(panel.current).transform;
     const currentPhoto = { ...geometry(flight.current.getBoundingClientRect()), opacity: getComputedStyle(flight.current).opacity };
     const currentContentOpacity = getComputedStyle(content.current).opacity;
@@ -59,7 +61,7 @@ export function PortraitModal({ origin, suspect, image, onClose }: {
       { transform: currentPanelTransform }, { transform: transformFrom(target, panel.current.getBoundingClientRect()) },
     ], options);
     const returnPhoto = flight.current.animate([
-      currentPhoto, { ...geometry(target), opacity: 1, borderRadius: '5px' },
+      currentPhoto, { ...geometry(target), opacity: 1, borderRadius: targetRadius },
     ], options);
     const hideContent = content.current.animate([{ opacity: currentContentOpacity }, { opacity: 0, offset: .35 }, { opacity: 0 }], options);
     const hideBackdrop = backdrop.current.animate([{ opacity: currentBackdropOpacity }, { opacity: 0 }], options);
@@ -78,8 +80,8 @@ export function PortraitModal({ origin, suspect, image, onClose }: {
       { transform: 'none' },
     ], options);
     const expandPhoto = flight.current.animate([
-      { ...geometry(origin.rect), borderRadius: '5px' },
-      { ...geometry(destination), borderRadius: '10px' },
+      { ...geometry(origin.rect), borderRadius: getComputedStyle(origin.source.querySelector('img') ?? origin.source).borderRadius },
+      { ...geometry(destination), borderRadius: getComputedStyle(panel.current).borderRadius },
     ], options);
     const hidePhoto = flight.current.animate([{ opacity: 1 }, { opacity: 0 }], {
       ...options, duration: reducedMotion ? 1 : 240, easing: 'ease-out',

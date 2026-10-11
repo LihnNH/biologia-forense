@@ -1,4 +1,6 @@
 @import './images.css';
+@import './scrollbars.css';
+@import './corners.css';
 
 :root {
   --bg: #000;
@@ -119,7 +121,7 @@ h1 {
   margin: 0 auto clamp(22px, 4vw, 34px);
   padding: 13px 16px;
   border: 1px solid rgba(255,82,96,.25);
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner-radius-scale, 1));
   background: rgba(181,29,37,.075);
   color: rgba(255,255,255,.68);
   text-align: center;
@@ -139,7 +141,7 @@ h1 {
   min-height: 255px;
   padding: clamp(22px, 3.5vw, 30px);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.07), transparent 38%),
     radial-gradient(circle at 92% 100%, var(--red-faint), transparent 45%),
@@ -226,7 +228,7 @@ h1 {
   display: grid;
   place-items: center;
   border: 1px solid rgba(255,255,255,.2);
-  border-radius: 8px;
+  border-radius: calc(8px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.08), transparent 46%),
     rgba(0,0,0,.36);

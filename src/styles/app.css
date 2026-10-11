@@ -1,4 +1,6 @@
 @import './images.css';
+@import './scrollbars.css';
+@import './corners.css';
 
 :root {
   --bg: #050607;
@@ -212,7 +214,7 @@ h1 {
   align-items: center;
   gap: 16px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.075), transparent 36%),
     radial-gradient(circle at 30% 90%, var(--red-faint), transparent 45%),
@@ -367,7 +369,7 @@ h1 {
   flex-direction: column;
   gap: 26px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.075), transparent 36%),
     linear-gradient(180deg, var(--panel), rgba(12, 13, 14, .82));
@@ -445,7 +447,7 @@ h1 {
   overflow: visible;
   padding: 4px;
   border: 1px solid rgba(255,255,255,.18);
-  border-radius: 9px;
+  border-radius: calc(9px * var(--corner-radius-scale, 1));
   background: rgba(0,0,0,.4);
   box-shadow: 0 16px 28px rgba(0,0,0,.4);
 }
@@ -454,7 +456,7 @@ h1 {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 5px;
+  border-radius: calc(5px * var(--corner-radius-scale, 1));
 }
 
 .portrait-button {
@@ -464,7 +466,7 @@ h1 {
   width: 100%;
   border: 0;
   padding: 0;
-  border-radius: 5px;
+  border-radius: calc(5px * var(--corner-radius-scale, 1));
   background: transparent;
   cursor: pointer;
 }
@@ -505,7 +507,7 @@ h1 {
   gap: 10px;
   padding: 12px 16px;
   border-left: 2px solid var(--red-soft);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-radius-scale, 1));
   background: rgba(181, 29, 37, .055);
   color: rgba(238, 238, 238, .72);
   font-size: .78rem;
@@ -628,7 +630,7 @@ h1 {
 .back-button,
 .suspect-button {
   border: 1px solid rgba(255, 255, 255, .18);
-  border-radius: 8px;
+  border-radius: calc(8px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.075), transparent 36%),
     linear-gradient(180deg, rgba(33,35,38,.86), rgba(11,12,13,.86));
@@ -692,7 +694,7 @@ h1 {
   align-items: center;
   gap: 14px;
   border: 1px solid rgba(255,255,255,.14);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.06), transparent 42%),
     rgba(0,0,0,.24);
@@ -752,7 +754,7 @@ h1 {
   width: clamp(58px, 12vw, 92px);
   aspect-ratio: 0.86;
   border: 1px solid rgba(255,255,255,.20);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   outline: none;
   background:
     linear-gradient(145deg, rgba(255,255,255,.07), transparent 42%),
@@ -858,13 +860,22 @@ h1 {
   overflow-y: auto;
   padding: clamp(22px, 4vw, 32px);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.085), transparent 38%),
     linear-gradient(180deg, rgba(24,26,28,.96), rgba(8,9,10,.96));
   box-shadow:
     0 28px 60px rgba(0,0,0,.64),
     inset 0 -1px 0 rgba(181,29,37,.36);
+}
+
+/* Blur the inactive screen instead of resampling the animated backdrop on hover. */
+body:has(#guess-error-modal.is-active) .page {
+  filter: blur(7px);
+}
+
+#guess-error-modal {
+  backdrop-filter: none;
 }
 
 #settings-modal {
@@ -910,7 +921,7 @@ h1 {
   width: min(100%, 360px);
   padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner-radius-scale, 1));
   outline: none;
   background: rgba(0, 0, 0, .3);
   color: var(--muted);
@@ -926,7 +937,7 @@ h1 {
   width: calc(50% - 6px);
   height: calc(100% - 12px);
   border: 1px solid rgba(255, 255, 255, .4);
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner-radius-scale, 1));
   background: linear-gradient(145deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .035));
   box-shadow: 0 3px 12px rgba(0, 0, 0, .3);
   transform: translateX(0);
@@ -953,11 +964,16 @@ h1 {
   border-color: rgba(255, 83, 91, .65);
 }
 
-.smoke-settings {
+.smoke-settings,
+.offline-data-settings {
   margin-top: 26px;
   padding-top: 22px;
   border-top: 1px solid var(--line);
 }
+
+.offline-data-settings .settings-reset { margin-top: 0; }
+.offline-data-settings .settings-reset:disabled { opacity: .45; cursor: default; }
+.settings-offline-hint { margin-top: 10px; color: var(--muted); font-size: .75rem; line-height: 1.5; }
 
 .settings-section-heading,
 .settings-slider-heading,
@@ -1131,7 +1147,7 @@ h1 {
   position: fixed;
   pointer-events: none;
   overflow: hidden;
-  border-radius: 5px;
+  border-radius: calc(5px * var(--corner-radius-scale, 1));
 }
 
 .portrait-flight img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -1196,7 +1212,7 @@ h1 {
   position: absolute;
   z-index: 1;
   inset: -4px;
-  border-radius: 11px;
+  border-radius: calc(11px * var(--corner-radius-scale, 1));
   pointer-events: none;
   background: conic-gradient(
     from var(--guess-angle),
@@ -1340,7 +1356,7 @@ h1 {
 .nucleotide-panel,
 .dna-flow {
   border: 1px solid rgba(255,255,255,.12);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.055), transparent 38%),
     rgba(0,0,0,.18);
@@ -1377,7 +1393,7 @@ h1 {
   min-height: 330px;
   padding: 22px;
   border: 1px solid rgba(255,255,255,.08);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   overflow: hidden;
   background:
     radial-gradient(circle at 18% 12%, rgba(181,29,37,.10), transparent 28%),
@@ -1398,79 +1414,6 @@ h1 {
   pointer-events: none;
 }
 
-.helix {
-  position: relative;
-  width: 250px;
-  height: 282px;
-  margin: 0 auto;
-}
-
-.helix::before,
-.helix::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  width: 8px;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(181,29,37,.9), rgba(255,255,255,.14));
-  box-shadow: 0 0 15px rgba(181,29,37,.16);
-  animation: helixWave 4.8s ease-in-out infinite;
-  transform-origin: center;
-}
-
-.helix::before { left: 56px; }
-.helix::after { right: 56px; animation-delay: -.55s; }
-
-.helix-rung {
-  position: absolute;
-  left: 50%;
-  width: 176px;
-  height: 28px;
-  transform: translateX(-50%);
-  animation: rungShift 4.8s ease-in-out infinite;
-  animation-delay: var(--delay);
-}
-
-.helix-rung::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 18px;
-  right: 18px;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,.16), rgba(255,255,255,.48), rgba(255,255,255,.16));
-  transform: translateY(-50%);
-}
-
-.base {
-  position: absolute;
-  top: 50%;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  transform: translateY(-50%);
-  font-family: "Bebas Neue", Impact, sans-serif;
-  font-size: 1.95rem;
-  letter-spacing: .06em;
-  border: 1px solid rgba(255,255,255,.22);
-  box-shadow: 0 14px 20px rgba(0,0,0,.28), inset 0 -2px 0 rgba(255,255,255,.08);
-  animation: baseFloat 3.2s ease-in-out infinite;
-  animation-delay: var(--delay);
-}
-
-.base.left {
-  left: 0;
-  background: linear-gradient(180deg, rgba(181,29,37,.92), rgba(72,6,10,.92));
-}
-
-.base.right {
-  right: 0;
-  background: linear-gradient(180deg, rgba(52,56,63,.95), rgba(19,20,23,.95));
-}
-
 .arrow-tag {
   position: absolute;
   top: 116px;
@@ -1481,7 +1424,7 @@ h1 {
   gap: 12px;
   padding: 12px 14px;
   border: 1px solid rgba(255,255,255,.11);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   background: rgba(8,9,10,.72);
   color: rgba(238,238,238,.80);
   font-size: .93rem;
@@ -1521,7 +1464,7 @@ h1 {
 .base-item {
   padding: 14px 16px;
   border: 1px solid rgba(255,255,255,.10);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   background: rgba(255,255,255,.03);
 }
 
@@ -1575,7 +1518,7 @@ h1 {
   position: relative;
   padding: 14px 14px 14px 58px;
   border: 1px solid rgba(255,255,255,.10);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   background: rgba(255,255,255,.03);
   color: rgba(238,238,238,.78);
   line-height: 1.6;
@@ -1667,7 +1610,7 @@ h1 {
   width: 100%;
   display: block;
   border: 1px solid rgba(255,255,255,.10);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   box-shadow: 0 18px 36px rgba(0,0,0,.28);
   background: rgba(0,0,0,.18);
 }
@@ -1687,25 +1630,10 @@ h1 {
   margin-top: 14px;
   padding: 12px 14px;
   border-left: 3px solid var(--red);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 calc(8px * var(--corner-radius-scale, 1)) calc(8px * var(--corner-radius-scale, 1)) 0;
   background: rgba(181,29,37,.08);
   color: rgba(238,238,238,.84);
   line-height: 1.62;
-}
-
-@keyframes helixWave {
-  0%, 100% { transform: skewY(0deg) scaleY(1); opacity: .85; }
-  50% { transform: skewY(2deg) scaleY(1.02); opacity: 1; }
-}
-
-@keyframes rungShift {
-  0%, 100% { transform: translateX(-50%) scaleX(.95); opacity: .84; }
-  50% { transform: translateX(-50%) scaleX(1.02); opacity: 1; }
-}
-
-@keyframes baseFloat {
-  0%, 100% { transform: translateY(-50%) translateY(0); }
-  50% { transform: translateY(-50%) translateY(-3px); }
 }
 
 @keyframes arrowPulse {
@@ -1948,7 +1876,7 @@ h1 {
   .case-card {
     grid-template-columns: 86px 1fr 18px;
     gap: 10px;
-    border-radius: 8px;
+    border-radius: calc(8px * var(--corner-radius-scale, 1));
   }
 
   .icon-ring {
@@ -2024,14 +1952,6 @@ h1 {
     min-height: auto;
   }
 
-  .helix {
-    width: 214px;
-    height: 272px;
-  }
-
-  .helix::before { left: 42px; }
-  .helix::after { right: 42px; }
-  .helix-rung { width: 156px; }
   .timeline-card { min-width: 138px; }
 }
 
@@ -2065,7 +1985,7 @@ body.dna-viewer-open .page {
   height: 100%;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.12);
-  border-radius: clamp(20px, 3vw, 34px);
+  border-radius: calc(clamp(20px, 3vw, 34px) * var(--corner-radius-scale, 1));
   background:
     radial-gradient(circle at 50% 50%, rgba(181,29,37,.24), transparent 34%),
     radial-gradient(circle at 76% 16%, rgba(255,255,255,.04), transparent 30%),
@@ -2110,45 +2030,61 @@ body.dna-viewer-open .page {
 
 .dna-webgl-fallback {
   position: absolute;
-  inset: clamp(92px, 14vh, 132px) 24px 54px;
+  inset: clamp(92px, 14vh, 132px) 24px 40px;
   z-index: 2;
-  display: grid;
-  place-content: center;
-  justify-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 24px;
-  text-align: center;
-  pointer-events: none;
 }
 
-.dna-webgl-fallback[hidden] {
-  display: none;
+.dna-static-map {
+  position: relative;
+  flex: 0 1 1000px;
+  min-width: 0;
+  max-width: calc((100svh - 200px) * 1024 / 540);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 0;
 }
 
-.dna-webgl-fallback .helix {
-  margin: 0;
-  filter: drop-shadow(0 22px 30px rgba(0,0,0,.56));
+.dna-static-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.dna-fallback-copy {
+.dna-image-point {
+  position: absolute;
+  transform: translate(-50%, -50%);
   display: grid;
-  gap: 5px;
-  max-width: 480px;
-  color: rgba(255,255,255,.64);
-  font-size: clamp(.78rem, 1.2vw, .95rem);
-  line-height: 1.5;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.42);
+  border-radius: 50%;
+  background: rgba(0,0,0,.95);
+  box-shadow: 0 2px 9px rgba(0,0,0,.78);
+  color: rgba(255,255,255,.9);
+  font: 700 12px/1 Arial, sans-serif;
+  cursor: pointer;
 }
 
-.dna-fallback-copy strong {
-  color: #ffffff;
-  font-family: "Bebas Neue", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-  font-size: clamp(1.55rem, 3vw, 2.2rem);
-  font-weight: 400;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+.dna-image-point:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
-.dna-viewer-card.using-2d-fallback canvas,
-.dna-viewer-card.using-2d-fallback .dna-callout-layer {
+.dna-image-point:hover,
+.dna-image-point[aria-pressed="true"] {
+  border-color: #fff;
+}
+
+.dna-viewer-card.using-2d-fallback canvas {
   display: none;
 }
 
@@ -2183,7 +2119,7 @@ body.dna-viewer-open .page {
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 4px;
+  border-radius: calc(4px * var(--corner-radius-scale, 1));
   background: transparent;
   color: inherit;
   font-family: "Bebas Neue", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
@@ -2290,7 +2226,7 @@ body.dna-viewer-open .page {
   width: min(330px, calc(100% - 28px));
   padding: 14px 16px;
   border: 1px solid rgba(255,255,255,.16);
-  border-radius: 12px;
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.07), transparent 42%),
     rgba(7,7,8,.92);
@@ -2386,7 +2322,7 @@ body.dna-viewer-open .page {
   width: min(320px, calc(100vw - 44px));
   padding: 17px 19px 18px;
   border: 1px solid rgba(255, 255, 255, .24);
-  border-radius: 18px;
+  border-radius: calc(18px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255,255,255,.055), transparent 42%),
     rgba(0, 0, 0, .92);

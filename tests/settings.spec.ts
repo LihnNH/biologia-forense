@@ -167,12 +167,13 @@ test('traduz o modo 2D mesmo após a falha de WebGL', async ({ page }) => {
   });
   await page.goto('/');
   await page.locator('#open-dna-info-home').click();
-  await expect(page.locator('#dna-fallback-message')).toContainText('não está disponível');
+  await expect(page.locator('.dna-static-image')).toBeVisible();
   await openSettings(page);
   await page.getByRole('switch', { name: /Linguagem|Language/ }).click();
   await closeSettings(page);
-  await expect(page.locator('#dna-fallback-message')).toContainText('is not available');
-  await expect(page.locator('#dna-3d-status')).toHaveText('Compatible 2D mode active');
+  await expect(page.locator('.dna-static-image')).toHaveAttribute('alt', 'Image of a DNA molecule.');
+  await page.keyboard.press('2');
+  await expect(page.locator('#dna-callout-title')).toHaveText(hotspotDetailsEn[1].title);
 });
 
 test('as traduções mantêm todos os suspeitos, idades, códigos e pontos do DNA', () => {

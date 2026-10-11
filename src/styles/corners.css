@@ -1,0 +1,72 @@
+/* Enlarge native squircle corners; unsupported browsers keep every original radius. */
+@supports (corner-shape: squircle) {
+  :where(
+    .case-card,
+    .screen-panel,
+    .suspect-portrait,
+    .suspect-portrait img,
+    .portrait-button,
+    .portrait-flight,
+    .case-image-notice,
+    .action-button,
+    .back-button,
+    .suspect-button,
+    .guess-selection,
+    .code-input,
+    .modal-panel,
+    .language-switch,
+    .language-switch-thumb,
+    .settings-toggle,
+    .settings-debug-link,
+    .guess-badge,
+    .helper-link,
+    .dna-stage,
+    .dna-copy,
+    .nucleotide-panel,
+    .dna-flow,
+    .dna-visual,
+    .arrow-tag,
+    .pair-pill,
+    .info-block,
+    .timeline-card,
+    .base-item,
+    .step-card,
+    .nucleotide-figure,
+    .dna-guide-figure,
+    .micro-note,
+    .dna-viewer-card,
+    .dna-title-button,
+    .dna-license-card,
+    .dna-callout,
+    .finale-guess-notice,
+    .finale-home,
+    .warning,
+    .code span,
+    .debug-link,
+    .debug-navigation a,
+    .viewer,
+    .viewer .count,
+    .viewer button,
+    .debug-panel,
+    .offline-retry
+  ) {
+    --corner-radius-scale: 2.24;
+    corner-shape: squircle;
+  }
+
+  /* Keep decorative layers aligned with their card's corners. */
+  .case-card::after,
+  .suspect-portrait.is-guess::before {
+    corner-shape: inherit;
+  }
+
+  /* Ordinary buttons keep their original corners; portraits and case cards stay squircles. */
+  button:not(.portrait-button),
+  [role="button"]:not(.portrait-button):not(.case-card),
+  .settings-debug-link,
+  .debug-navigation a,
+  .language-switch-thumb {
+    --corner-radius-scale: 1;
+    corner-shape: round;
+  }
+}

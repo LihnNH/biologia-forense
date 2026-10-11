@@ -1,3 +1,6 @@
+@import './scrollbars.css';
+@import './corners.css';
+
 :root {
   color-scheme: dark;
   --red: #d93440;
@@ -38,7 +41,7 @@ body {
   height: 100%;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: clamp(20px, 3vw, 34px);
+  border-radius: calc(clamp(20px, 3vw, 34px) * var(--corner-radius-scale, 1));
   background:
     radial-gradient(circle at 50% 50%, rgba(181, 29, 37, .27), transparent 34%),
     radial-gradient(circle at 76% 16%, rgba(87, 130, 255, .12), transparent 30%),
@@ -141,7 +144,7 @@ button {
   min-height: 44px;
   padding: 0 17px;
   border: 1px solid rgba(255, 255, 255, .18);
-  border-radius: 9px;
+  border-radius: calc(9px * var(--corner-radius-scale, 1));
   background:
     linear-gradient(145deg, rgba(255, 255, 255, .08), transparent 42%),
     rgba(14, 15, 19, .82);
@@ -174,7 +177,7 @@ button:disabled {
   width: min(430px, calc(100% - 40px));
   padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: calc(14px * var(--corner-radius-scale, 1));
   background: var(--panel);
   box-shadow: 0 14px 36px rgba(0, 0, 0, .38);
   pointer-events: none;
@@ -198,7 +201,6 @@ button:disabled {
   display: grid;
   gap: 6px;
   overflow: auto;
-  scrollbar-width: thin;
 }
 
 .point-row {

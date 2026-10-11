@@ -1,0 +1,7 @@
+.offline-status { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: rgba(238,238,238,.62); font-size: .75rem; line-height: 1.5; }
+.offline-dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: #aaa; }
+.offline-status.is-ready .offline-dot { background: #8ac59f; }
+.offline-status.is-error .offline-dot { background: #ff8c95; }
+.offline-retry { padding: 3px 8px; min-height: 28px; border: 1px solid rgba(255,255,255,.2); border-radius: calc(6px * var(--corner-radius-scale, 1)); background: transparent; color: #eee; font: inherit; cursor: pointer; }
+.offline-retry:focus-visible { outline: 2px solid #ff5260; outline-offset: 3px; }
+#settings-modal .offline-status { margin-top: 16px; }

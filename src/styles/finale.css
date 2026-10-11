@@ -168,7 +168,7 @@ body.finale-title .forensic-noise { opacity: 0; transition: none; }
   width: 100%;
   padding: clamp(8px, 1.2svh, 12px) 18px;
   border: 1px solid rgba(255,255,255,.14);
-  border-radius: 8px;
+  border-radius: calc(8px * var(--corner-radius-scale, 1));
   background: rgba(255,255,255,.035);
   color: rgba(238,238,238,.78);
   font-size: .9rem;

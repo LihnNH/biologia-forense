@@ -1,6 +1,16 @@
 export interface Position { x: number; y: number; z: number }
 export interface SavedPoint { id: number; position: Position }
 
+// Same numbered hotspots as the 3D model, relative to the static image.
+export const hotspotImagePositions = [
+  { x: 0.403, y: 0.447341 },
+  { x: 0.513, y: 0.420525 },
+  { x: 0.664, y: 0.590998 },
+  { x: 0.643, y: 0.665699 },
+  { x: 0.702, y: 0.636968 },
+  { x: 0.678, y: 0.698261 },
+];
+
 export const hotspotPositions = [
   { x: -125.941251, y: -37.733574, z: 50.930829 },
   { x: 241.141003, y: 93.502434, z: 184.378981 },

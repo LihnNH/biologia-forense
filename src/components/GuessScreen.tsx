@@ -57,8 +57,15 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
           className={`code-input${code[index] ? ' filled' : ''}`} type="text" inputMode="text" maxLength={1}
           pattern="[ATCGatcg]" autoCapitalize="characters" autoComplete="off" spellCheck={false}
           aria-label={label} disabled={!selectedGuess || blocked} value={code[index]}
+          onFocus={event => event.currentTarget.select()}
+          onClick={event => event.currentTarget.select()}
           onChange={event => update(index, event.target.value)}
           onKeyDown={event => {
+            if (/^[atcg]$/i.test(event.key) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+              event.preventDefault();
+              update(index, event.key);
+              return;
+            }
             if (event.key === 'Backspace' && !code[index] && index > 0) {
               event.preventDefault();
               const next = [...code];
@@ -66,8 +73,12 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
               onCode(next);
               inputs.current[index - 1]?.focus();
             }
-            if (event.key === 'ArrowLeft' && index > 0) inputs.current[index - 1]?.focus();
-            if (event.key === 'ArrowRight' && index < 3) inputs.current[index + 1]?.focus();
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+              event.preventDefault();
+              const target = Math.max(0, Math.min(3, index + (event.key === 'ArrowLeft' ? -1 : 1)));
+              inputs.current[target]?.focus();
+              inputs.current[target]?.select();
+            }
           }}
           onPaste={event => {
             event.preventDefault();

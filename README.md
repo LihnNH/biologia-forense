@@ -27,11 +27,49 @@ a aplicação utiliza a representação 2D.
 
 A aplicação está disponível em `/` e em `/trabalho.html`, para manter o endereço antigo.
 
+## Uso offline na feira
+
+Na versão publicada, um service worker salva automaticamente o build completo
+no Cache Storage do navegador: páginas, scripts, fontes, fotos, nomes dos suspeitos,
+imagens do finale e modelo de DNA. Não é preciso instalar um aplicativo/PWA.
+
+Antes da feira, abra o site com internet no navegador que será usado e confira
+**Pronto para usar offline** nas configurações (`C`). O mesmo indicador aparece
+no debug. Só aparece depois que todos os arquivos foram salvos e o service worker
+assumiu o controle da página. Se algum download falhar, use **Tentar novamente**.
+
+Depois disso, o site e o debug continuam funcionando se a conexão cair, inclusive
+ao recarregar ou abrir outra aba. O botão das configurações continua sendo o único
+acesso ao debug no site principal. Dentro do debug, os links permitem alternar
+entre o menu, as respostas e as posições do DNA sem depender da rede. Os arquivos
+das três páginas são preparados mesmo se você ainda não tiver visitado os modos.
+
+O cache fica nesse navegador e nesse endereço; não apague os dados do site antes
+da feira. Uma primeira visita sem internet não consegue preparar os arquivos.
+Ao terminar, **Apagar dados offline** nas configurações remove o cache offline,
+o service worker e as preferências do site em `localStorage` e `sessionStorage`.
+A limpeza também suspende o preparo nas abas abertas do debug. Depois de aparecer
+**Dados offline apagados**, feche todas as abas do site e do debug; uma nova visita
+com internet prepara os arquivos novamente. Cache HTTP e histórico comuns do
+navegador são gerenciados pelo próprio navegador.
+Para testar localmente, use `npm run build` e `npm run preview`; abrir o HTML
+diretamente ou usar `npm run dev` não ativa o service worker.
+
+Cada build tem uma versão própria. Atualizações são preparadas em segundo plano
+e entram em uso quando todas as abas da versão anterior forem fechadas, preservando
+as investigações em andamento. Depois de uma publicação, abra o site com internet,
+aguarde o preparo, feche as abas do site/debug e abra novamente antes de conferir
+o indicador para a feira.
+
 O código correto libera a solução do caso mesmo quando o suspeito escolhido está
 errado. Nesse caso, a tela final avisa que o palpite estava incorreto e mostra o
 culpado real. Código errado não libera a solução; a mensagem pede para revisar
 o código. Ao fechar o aviso, a pessoa volta aos suspeitos com o palpite anterior
 ainda marcado e pode tentar outro código.
+
+Nos campos do código, as setas esquerda/direita passam entre as quatro letras e
+selecionam a letra do campo para permitir sua substituição. Backspace em um campo
+vazio apaga a letra anterior.
 
 ## Verificação
 
@@ -52,6 +90,7 @@ npm test
 - `src/data/`: textos dos casos, soluções, ícones e pontos de interesse do DNA.
 - `src/styles/`: estilos da aplicação e das páginas de apoio.
 - `src/debug/`: componentes React das páginas de apoio.
+- `src/offline/` e `src/lib/offline.ts`: cache versionado do build e preparo offline.
 - `assets/`: SVGs e o modelo `dna.glb`; o Vite processa os arquivos utilizados.
 - `assets/casos/`: fotos dos suspeitos, separadas por caso, exibidas sem corte na galeria.
 - `assets/casos-webp/`: versões leves utilizadas pela aplicação; os originais não entram no build.
@@ -64,7 +103,11 @@ nem dependência de scripts ou fontes de `vendor`.
 O visualizador é preparado durante o carregamento inicial. Arraste para girar,
 use a roda do mouse ou `+`/`-` para aproximar e as setas para girar pelo teclado.
 As teclas `1` a `6` mostram os pontos explicativos; `L` abre a licença.
-Quando a aceleração 3D ou o carregamento do modelo falha, a hélice 2D é exibida.
+Quando a aceleração 3D ou o carregamento do modelo falha, a imagem 2D é exibida.
+O fallback usa `assets/dna-static-image.png`, com seis pontos fixos em coordenadas
+relativas à imagem. As teclas `1` a `6` ou um clique no ponto mostram os mesmos
+títulos, descrições e painéis animados do 3D. Pressionar a mesma tecla novamente
+fecha a explicação. Os pontos e suas linhas continuam alinhados ao redimensionar.
 
 ## Páginas de apoio
 

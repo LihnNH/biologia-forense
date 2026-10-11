@@ -2,11 +2,13 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { artwork } from '../data/assets';
 import { CASE_LABELS, CASE_ORDER, CASE_RESULTS } from '../data/cases';
+import { DebugNavigation } from './DebugNavigation';
 import '../fonts';
 import '../styles/answers.css';
 
 function Answers() {
   return <main className="page">
+    <DebugNavigation current="answers" />
     <header>
       <img draggable={false} className="dna-mark" src={artwork.dna} alt="" aria-hidden="true" />
       <h1>Gabarito Forense</h1>

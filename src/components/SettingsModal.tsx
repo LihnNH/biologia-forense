@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react';
 import { useI18n } from '../i18n/I18n';
 import { defaultSmokeSettings, smokeRanges, type SmokeSettings } from '../lib/smokeSettings';
 import { Modal } from './Modal';
+import { OfflineStatus } from './OfflineStatus';
+import { clearOfflineData, useOffline } from '../lib/offline';
 
 const sliderLabels = { fps: 'smokeFps', quality: 'smokeQuality', strength: 'smokeStrength', speed: 'smokeSpeed' } as const;
 
@@ -13,6 +15,7 @@ export function SettingsModal({ smokeSettings, onSmokeChange, closing, onExited,
   onClose: () => void;
 }) {
   const { language, setLanguage, t } = useI18n();
+  const { phase: offlinePhase } = useOffline();
   const english = language === 'en';
   return <Modal id="settings-modal" labelledBy="settings-title" closing={closing} isolateKeyboard onExited={onExited} onClose={onClose}>
     <h2 className="modal-title settings-title" id="settings-title">{t('settings')}</h2>
@@ -55,6 +58,17 @@ export function SettingsModal({ smokeSettings, onSmokeChange, closing, onExited,
       </div>
       <button className="settings-reset" type="button" onClick={() => onSmokeChange({ ...defaultSmokeSettings })}>{t('restoreDefaults')}</button>
     </section>
+    <section className="offline-data-settings" aria-labelledby="settings-offline-title">
+      <div className="settings-section-heading">
+        <h3 id="settings-offline-title">{t('offlineData')}</h3>
+        <button className="settings-reset" type="button" id="clear-offline-data"
+          disabled={offlinePhase === 'clearing' || offlinePhase === 'cleared'}
+          onClick={() => { void clearOfflineData().catch(() => {}); }}>
+          {t(offlinePhase === 'clearing' ? 'clearingOfflineData' : 'clearOfflineData')}
+        </button>
+      </div>
+      <p className="settings-offline-hint">{t('clearOfflineHint')}</p>
+    </section>
     <div className="settings-debug">
       <span className="settings-debug-label">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M14.6 6.4a5 5 0 0 0-6.5 6.5L3 18l3 3 5.1-5.1a5 5 0 0 0 6.5-6.5L14 13l-3-3 3.6-3.6Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
@@ -65,5 +79,6 @@ export function SettingsModal({ smokeSettings, onSmokeChange, closing, onExited,
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M14 4h6v6m0-6-9 9M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </a>
     </div>
+    <OfflineStatus language={language} />
   </Modal>;
 }

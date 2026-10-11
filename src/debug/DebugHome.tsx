@@ -1,12 +1,14 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { artwork } from '../data/assets';
+import { DebugNavigation } from './DebugNavigation';
 import '../fonts';
 import '../styles/answers.css';
 import '../styles/debug-home.css';
 
 function DebugHome() {
   return <main className="page debug-home">
+    <DebugNavigation current="menu" />
     <header>
       <img draggable={false} className="dna-mark" src={artwork.dna} alt="" aria-hidden="true" />
       <h1>Ferramentas de apoio</h1>
