@@ -29,10 +29,12 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
 
   const status = t(!selectedGuess ? 'chooseBeforeCode' : verdict ? 'verifying' : 'awaitingCode');
 
-  return <article className="screen-panel">
-    <div className="screen-topbar">
-      <h2 className="screen-title" id="guess-title">{t('code')} - {caseLabels[caseId]}</h2>
-      <button className="back-button" type="button" id="back-to-case" onClick={onBack}>{t('back')}</button>
+  return <article className="screen-panel guess-panel">
+    <div className="case-heading">
+      <button className="back-button case-back" type="button" id="back-to-case" onClick={onBack} aria-label={t('back')} title={t('backToSuspects')}>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      <h2 className="screen-title" id="guess-title">{caseLabels[caseId]}</h2>
     </div>
     <form className="guess-form" id="guess-form" autoComplete="off" onSubmit={event => event.preventDefault()}>
       <div className={`guess-selection${selectedGuess ? '' : ' is-empty'}`} id="guess-selection">

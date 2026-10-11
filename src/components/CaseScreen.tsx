@@ -64,6 +64,10 @@ export function CaseScreen({ caseId, onHome, activePortrait, onPortrait, selecte
         </button>
       </li>)}
     </ul>
+    <p className="case-image-notice">
+      <span className="case-image-notice-icon" aria-hidden="true" />
+      <span>{t('suspectImageNotice')}</span>
+    </p>
     <div className="case-actions">
       <button className="action-button" type="button" id="open-pick" ref={pickButton} aria-pressed={selecting} onClick={togglePicking}>{t(selecting ? 'statements' : 'guess')}</button>
       <button className="action-button" type="button" id="open-guess" disabled={!selectedGuess} onClick={onCode}>{t('code')}</button>
