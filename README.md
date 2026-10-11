@@ -93,7 +93,10 @@ e os registros DNS no provedor do domínio. Em publicações via Actions, o arqu
 [documentação do GitHub](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
 Depois de configurar o domínio, execute o workflow novamente para atualizar a base do build.
 
-## Licença do modelo
+## Licença
+
+O código do projeto usa a [licença MIT](LICENSE), em nome de LihnNH.
 
 O modelo [DNA](https://skfb.ly/onW7w), de LucasPresoto, usa a licença
 [Creative Commons Atribuição 4.0 Internacional](https://creativecommons.org/licenses/by/4.0/).
+A atribuição original está preservada em [assets/dna.LICENSE](assets/dna.LICENSE).
