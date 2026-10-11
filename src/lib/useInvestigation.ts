@@ -54,7 +54,10 @@ function reducer(state: State, action: Action): State {
       if (state.view !== 'case') return state;
       const suspect = CASES[state.caseId].suspects[action.index];
       if (!suspect) return state;
-      return { ...state, guesses: { ...state.guesses, [state.caseId]: suspect.name },
+      const guesses = { ...state.guesses };
+      if (guesses[state.caseId] === suspect.name) delete guesses[state.caseId];
+      else guesses[state.caseId] = suspect.name;
+      return { ...state, guesses,
         modal: null, code: emptyCode() };
     }
     case 'closeModal':
@@ -65,9 +68,7 @@ function reducer(state: State, action: Action): State {
       if (state.view !== 'guess') return state;
       if (action.correct) return { ...state, finalePhase: 'fade',
         incorrectSuspect: state.guesses[state.caseId] !== CASE_RESULTS[state.caseId].culprit };
-      const guesses = { ...state.guesses };
-      delete guesses[state.caseId];
-      return { ...state, guesses, code: emptyCode(),
+      return { ...state, code: emptyCode(),
         view: 'guess', modal: 'error' };
     }
     case 'advanceFinale': {

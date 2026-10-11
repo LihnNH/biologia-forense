@@ -237,16 +237,28 @@ for (const failure of ['code', 'both'] as const) {
     await expect(page.getByRole('alertdialog')).toBeVisible();
     await expect(page.locator('#done-view')).toBeHidden();
     await expect(page.locator('.finale-blackout')).toHaveCount(0);
-    await expect(page.locator('#guess-error-copy')).toHaveText('Alguma parte do seu palpite não confere com as evidências. Revise os suspeitos deste caso e tente novamente.');
-    await page.keyboard.press('Escape');
+    await expect(page.locator('#guess-error-title')).toHaveText('Código incorreto');
+    await expect(page.locator('#guess-error-copy')).toHaveText('O código digitado não confere com as evidências. Revise o código e tente novamente.');
+    if (failure === 'code') await page.getByRole('button', { name: 'Voltar aos suspeitos', exact: true }).click();
+    else await page.keyboard.press('Escape');
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
     await expect(page.locator('#case-view')).toBeVisible();
-    await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(0);
-    await expect(page.locator('#open-guess')).toBeDisabled();
+    await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(1);
+    await expect(page.locator('.suspect-portrait.is-guess').getByRole('img')).toHaveAttribute('alt', `Foto de ${suspect}`);
+    await expect(page.locator('#open-guess')).toBeEnabled();
     await expect(page.locator('#open-pick')).toBeFocused();
-    await chooseSuspect(page, CASE_RESULTS.Faca.culprit);
     await page.locator('#open-guess').click();
+    await expect(page.locator('#guess-selected-name')).toHaveText(suspect);
+    for (const field of await page.locator('.code-input').all()) {
+      await expect(field).toBeEnabled();
+      await expect(field).toHaveValue('');
+    }
+    await expect(page.locator('.code-input').first()).toBeFocused();
+    await expect(page.locator('#code-status')).toHaveText('Aguardando código...');
     await enterCode(page, CASE_RESULTS.Faca.code);
     await expect(page.locator('#done-view')).toBeVisible();
+    await expect(page.locator('#culprit-name')).toHaveText(CASE_RESULTS.Faca.culprit);
+    await expect(page.locator('#result-guess-notice')).toHaveCount(failure === 'both' ? 1 : 0);
   });
 }
 
@@ -316,6 +328,29 @@ test('seleção pelas fotos funciona com teclado e Escape cancela o modo Palpite
   await expect(page.getByRole('dialog', { name: 'Laura Almeida' })).toHaveAttribute('data-phase', 'open');
   await page.keyboard.press('Escape');
   await expect(page.locator('.portrait-button').last()).toBeFocused();
+});
+
+test('clicar no suspeito já marcado no modo Palpite remove a marcação apenas daquele caso', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('[data-case="Corda"]').click();
+  await chooseSuspect(page, CASE_RESULTS.Corda.culprit);
+  await page.locator('#case-view').getByRole('button', { name: 'Voltar', exact: true }).click();
+  await page.locator('[data-case="Faca"]').click();
+  await chooseSuspect(page, 'Rafael Oliveira');
+  await page.locator('#open-pick').click();
+  const marked = page.getByRole('button', { name: 'Desmarcar Rafael Oliveira como suspeito', exact: true });
+  await expect(marked).toHaveAttribute('aria-pressed', 'true');
+  await marked.click();
+  await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(0);
+  await expect(page.locator('#open-guess')).toBeDisabled();
+  await expect(page.locator('#open-pick')).toHaveText('Palpite');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await chooseSuspect(page, 'Rafael Oliveira');
+  await chooseSuspect(page, 'Mariana Costa');
+  await page.locator('#case-view').getByRole('button', { name: 'Voltar', exact: true }).click();
+  await page.locator('[data-case="Corda"]').click();
+  await expect(page.locator('.suspect-portrait.is-guess').getByRole('img')).toHaveAttribute('alt', `Foto de ${CASE_RESULTS.Corda.culprit}`);
+  await expect(page.locator('#open-guess')).toBeEnabled();
 });
 
 test('Depoimentos cancela a escolha, restaura o botão Palpite e preserva o suspeito marcado', async ({ page }) => {

@@ -53,7 +53,7 @@ export function CaseScreen({ caseId, onHome, activePortrait, onPortrait, selecte
     </div>
     <ul className={`suspect-gallery${selecting ? ' is-picking' : ''}`} ref={gallery} aria-label={t('suspects', { case: caseLabels[caseId] })}>
       {cases[caseId].suspects.map((suspect, index) => <li className={`suspect-portrait${selectedGuess === suspect.name ? ' is-guess' : ''}`} style={{ '--portrait-tilt': `${tilts[index]}deg` } as CSSProperties} key={suspect.name}>
-        <button className={`portrait-button${activePortrait === index ? ' is-expanded' : ''}`} type="button" aria-label={t(selecting ? 'markSuspect' : 'suspectInfo', { name: suspect.name })} aria-pressed={selecting ? selectedGuess === suspect.name : undefined} aria-haspopup={selecting ? undefined : 'dialog'} onClick={event => {
+        <button className={`portrait-button${activePortrait === index ? ' is-expanded' : ''}`} type="button" aria-label={t(selecting && selectedGuess === suspect.name ? 'unmarkSuspect' : selecting ? 'markSuspect' : 'suspectInfo', { name: suspect.name })} aria-pressed={selecting ? selectedGuess === suspect.name : undefined} aria-haspopup={selecting ? undefined : 'dialog'} onClick={event => {
           if (selecting) {
             wiggles.current.forEach(animation => animation.cancel());
             onPick(index);

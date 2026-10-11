@@ -147,8 +147,14 @@ test('traduz o erro e o DNA, incluindo o ponto selecionado e a licença', async 
   await openSettings(page);
   await page.getByRole('switch', { name: /Linguagem|Language/ }).click();
   await closeSettings(page);
-  await expect(page.locator('#guess-error-title')).toHaveText('Incorrect guess');
+  await expect(page.locator('#guess-error-title')).toHaveText('Incorrect code');
   await expect(page.locator('#guess-error-copy')).toContainText('does not match the evidence');
+  await page.getByRole('button', { name: 'Back to suspects', exact: true }).click();
+  await expect(page.locator('#case-view')).toBeVisible();
+  await expect(page.locator('.suspect-portrait.is-guess').getByRole('img')).toHaveAttribute('alt', `Photo of ${CASE_RESULTS.Faca.culprit}`);
+  await page.locator('#open-guess').click();
+  await expect(page.locator('#guess-selected-name')).toHaveText(CASE_RESULTS.Faca.culprit);
+  await expect(page.locator('.code-input').first()).toBeFocused();
 });
 
 test('traduz o modo 2D mesmo após a falha de WebGL', async ({ page }) => {

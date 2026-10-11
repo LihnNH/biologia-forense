@@ -29,7 +29,9 @@ A aplicação está disponível em `/` e em `/trabalho.html`, para manter o ende
 
 O código correto libera a solução do caso mesmo quando o suspeito escolhido está
 errado. Nesse caso, a tela final avisa que o palpite estava incorreto e mostra o
-culpado real. Código errado não libera a solução.
+culpado real. Código errado não libera a solução; a mensagem pede para revisar
+o código. Ao fechar o aviso, a pessoa volta aos suspeitos com o palpite anterior
+ainda marcado e pode tentar outro código.
 
 ## Verificação
 
