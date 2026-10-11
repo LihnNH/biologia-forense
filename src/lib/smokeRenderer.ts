@@ -1,6 +1,8 @@
 import { smokeFragmentShader, smokeVertexShader } from './smokeShaders';
 import { defaultSmokeSettings, type SmokeSettings } from './smokeSettings';
 
+export type SmokeTint = readonly [number, number, number];
+
 export function createSmokeRenderer(canvas: HTMLCanvasElement, initialSettings: SmokeSettings = defaultSmokeSettings) {
   const gl = canvas.getContext('webgl', {
     alpha: true, antialias: false, depth: false, stencil: false,
@@ -10,12 +12,13 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement, initialSettings: 
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   let program: WebGLProgram | null = null;
   let buffer: WebGLBuffer | null = null;
-  let uniforms: { resolution: WebGLUniformLocation | null; time: WebGLUniformLocation | null; density: WebGLUniformLocation | null } | null = null;
+  let uniforms: { resolution: WebGLUniformLocation | null; time: WebGLUniformLocation | null; density: WebGLUniformLocation | null; finaleColor: WebGLUniformLocation | null; finaleTint: WebGLUniformLocation | null } | null = null;
   let frame = 0;
   let elapsed = 0;
   let previousTime: number | null = null;
   let previousAnimationTime: number | null = null;
   let settings = { ...initialSettings };
+  let tint: SmokeTint | null = null;
   let active = false;
   let lost = false;
   let disposed = false;
@@ -63,6 +66,8 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement, initialSettings: 
         resolution: gl!.getUniformLocation(program, 'u_resolution'),
         time: gl!.getUniformLocation(program, 'u_time'),
         density: gl!.getUniformLocation(program, 'u_density'),
+        finaleColor: gl!.getUniformLocation(program, 'u_finale_color'),
+        finaleTint: gl!.getUniformLocation(program, 'u_finale_tint'),
       };
       canvas.style.visibility = settings.enabled ? '' : 'hidden';
     } catch {
@@ -78,6 +83,10 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement, initialSettings: 
     gl!.uniform2f(uniforms.resolution, canvas.width, canvas.height);
     gl!.uniform1f(uniforms.time, elapsed);
     gl!.uniform1f(uniforms.density, settings.strength / 100 * 1.55);
+    gl!.uniform1f(uniforms.finaleTint, tint ? 1 : 0);
+    // Keep the image's hue, with brightness suitable for subtle smoke over black.
+    const tintScale = tint ? .5 / Math.max(1, ...tint) : 0;
+    gl!.uniform3f(uniforms.finaleColor, (tint?.[0] ?? 0) * tintScale, (tint?.[1] ?? 0) * tintScale, (tint?.[2] ?? 0) * tintScale);
     gl!.clearColor(0, 0, 0, 0);
     gl!.clear(gl!.COLOR_BUFFER_BIT);
     gl!.drawArrays(gl!.TRIANGLES, 0, 6);
@@ -139,6 +148,7 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement, initialSettings: 
 
   return {
     setActive(value: boolean) { active = value; refresh(); },
+    setTint(value: SmokeTint | null) { tint = value; paint(); },
     setSettings(value: SmokeSettings) {
       const qualityChanged = settings.quality !== value.quality;
       const timingChanged = settings.fps !== value.fps || settings.speed !== value.speed || settings.enabled !== value.enabled;

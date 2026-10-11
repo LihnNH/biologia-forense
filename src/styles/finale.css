@@ -1,0 +1,216 @@
+/* Full-screen ending, over the site's existing smoke canvas. */
+body.finale-open::before { background: #000; }
+body.finale-open::after { opacity: 0; }
+body.finale-transitioning { overflow: hidden; }
+body.finale-open .smoke,
+body.finale-open .forensic-noise { transition: opacity 610ms ease; }
+body.finale-title .smoke,
+body.finale-title .forensic-noise { opacity: 0; transition: none; }
+
+.page.is-finale {
+  width: 100%;
+  min-height: 100svh;
+  padding: 0;
+  justify-content: flex-start;
+  transform: none;
+}
+
+#done-view.is-active { opacity: 1; transform: none; animation: none; }
+
+.finale-blackout {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  opacity: 1;
+}
+
+.finale-blackout.is-fade { animation: finaleBlackout 335ms linear both; }
+@keyframes finaleBlackout { from { opacity: 0; } to { opacity: 1; } }
+
+.finale-screen {
+  --finale-hero-height: clamp(260px, 44svh, 500px);
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100svh;
+  padding-bottom: clamp(40px, 7svh, 80px);
+  color: var(--text);
+}
+
+.finale-artwork {
+  --finale-arc: ellipse 75% calc(var(--finale-hero-height) * .8) at 50% calc(var(--finale-hero-height) * 1.54);
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: calc(var(--finale-hero-height) + 64px);
+  overflow: hidden;
+  opacity: 0;
+  /* The transparent ellipse below the photo lifts the smoky edge at its center. */
+  mask-image: radial-gradient(var(--finale-arc), transparent 88%, #000 112%);
+}
+
+.finale-artwork img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.finale-artwork::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,.12), transparent 35%, rgba(0,0,0,.48));
+}
+
+.finale-artwork::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  backdrop-filter: blur(32px);
+  mask-image: radial-gradient(var(--finale-arc), #000 88%, transparent 112%);
+}
+
+.finale-heading {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 32px, 1200px);
+  margin: 0 auto;
+  padding-top: calc(var(--finale-hero-height) - 110px);
+  text-align: center;
+}
+
+.finale-title {
+  font-family: "Bebas Neue", Impact, sans-serif;
+  font-size: clamp(2.9rem, 8.5vw, 8.8rem);
+  font-weight: 400;
+  line-height: .94;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #f2f2f2;
+  text-shadow: 0 4px 24px rgba(0,0,0,.9), 0 0 12px rgba(255,255,255,.08);
+  outline: none;
+}
+
+.finale-title-anchor,
+.finale-case-name { display: block; }
+
+.finale-case-name {
+  opacity: 0;
+  transform: translateY(var(--finale-title-offset, 0px)) scale(1.13);
+  transform-origin: center;
+}
+
+.finale-status {
+  display: block;
+  margin-top: clamp(16px, 2vw, 24px);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: clamp(1rem, 2.2vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: .2em;
+  color: rgb(var(--finale-accent));
+  text-shadow: 0 0 24px rgba(var(--finale-accent), .25);
+  opacity: 0;
+}
+
+.finale-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: min(100% - 44px, 720px);
+  margin: clamp(38px, 5svh, 56px) auto 0;
+  opacity: 0;
+}
+
+.finale-culprit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 12px;
+  font-size: clamp(1.12rem, 2vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.finale-culprit-name,
+.finale-culprit-signature { display: inline-flex; align-items: center; }
+.finale-name-image {
+  display: block;
+  width: auto;
+  height: 1.89em;
+  max-width: min(63vw, 252px);
+  object-fit: contain;
+}
+
+.finale-explanation {
+  width: 100%;
+  color: rgba(238,238,238,.72);
+  font-size: clamp(.95rem, 1.3vw, 1.08rem);
+  line-height: 1.85;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.finale-explanation strong { color: var(--text); }
+
+.finale-home {
+  gap: 12px;
+  margin-top: 12px;
+  min-height: 48px;
+  padding-inline: 24px;
+  border-radius: 999px;
+  font-size: .78rem;
+  letter-spacing: .09em;
+}
+
+.is-title .finale-case-name { animation: finaleTitleIn var(--finale-title-duration) linear both; }
+.is-reveal .finale-case-name { animation: finaleTitleTravel var(--finale-reveal-duration) cubic-bezier(.22,.7,.24,1) both; }
+.is-reveal .finale-artwork { animation: finaleArtIn var(--finale-reveal-duration) ease-out both; }
+.is-reveal .finale-content { animation: finaleContentIn var(--finale-reveal-duration) ease-out both; }
+.is-complete .finale-case-name { opacity: 1; transform: none; }
+.is-complete .finale-artwork,
+.is-complete .finale-content { opacity: 1; }
+.is-complete .finale-status { opacity: 1; animation: finaleStatusIn 220ms ease-out both; }
+
+@keyframes finaleTitleIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes finaleTitleTravel {
+  from { opacity: 1; transform: translateY(var(--finale-title-offset, 0px)) scale(1.13); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes finaleArtIn {
+  from { opacity: 0; transform: scale(1.025); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes finaleContentIn {
+  0%, 20% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes finaleStatusIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .finale-screen { --finale-hero-height: clamp(270px, 42svh, 390px); }
+  .finale-title { font-size: clamp(2.35rem, 9.5vw, 3.6rem); letter-spacing: .07em; }
+  .finale-content { width: calc(100% - 40px); gap: 22px; }
+  .finale-home { width: auto; max-width: 100%; font-size: .7rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finale-blackout,
+  .finale-screen * { animation: none !important; }
+  .finale-case-name { transform: none !important; }
+  .is-title .finale-case-name,
+  .is-reveal .finale-case-name,
+  .is-reveal .finale-artwork,
+  .is-reveal .finale-content { opacity: 1; }
+}

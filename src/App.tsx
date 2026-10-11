@@ -9,6 +9,7 @@ import { PortraitModal, type PortraitOrigin } from './components/PortraitModal';
 import { SettingsModal } from './components/SettingsModal';
 import { useI18n } from './i18n/I18n';
 import { suspectPortraits } from './data/suspectPortraits';
+import { finaleColors } from './data/finaleImages';
 import DnaViewer from './components/DnaViewer';
 import { StartupLoading } from './components/StartupLoading';
 import { assetCount, preloadAssets, type AssetProgress } from './lib/preloadAssets';
@@ -22,6 +23,7 @@ export default function App() {
   const settingsModalOpen = settingsModalPhase !== 'closed';
   const closeSettingsModal = useCallback(() => setSettingsModalPhase(phase => phase === 'closed' ? phase : 'closing'), []);
   const handleGlobalKey = useEffectEvent((event: KeyboardEvent) => {
+    if (finaleTransitioning) return;
     if (settingsModalOpen) {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeSettingsModal(); return; }
       if (event.key.toLowerCase() !== 'c') return;
@@ -53,6 +55,10 @@ export default function App() {
     return () => document.body.classList.remove('startup-loading');
   }, [loading]);
   const { state, dispatch, selectedGuess, verdict } = useInvestigation();
+  const finaleTransitioning = state.finalePhase !== 'idle' && state.finalePhase !== 'complete';
+  useEffect(() => {
+    if (finaleTransitioning) setSettingsModalPhase('closed');
+  }, [finaleTransitioning]);
   const [portrait, setPortrait] = useState<PortraitOrigin | null>(null);
   const closePortrait = useCallback(() => setPortrait(null), []);
   const portraitOpener = useRef<HTMLButtonElement | null>(null);
@@ -74,17 +80,18 @@ export default function App() {
     id: `${view}-view`, 'data-view': view, hidden: state.view !== view,
   });
   return <>
-    <Background active={!loading} smokeSettings={smokeSettings} />
-    <main className={`page${loading ? ' is-loading' : ''}`} inert={loading || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen} aria-hidden={loading}>
+    <Background active={!loading} smokeSettings={smokeSettings} smokeTint={state.view === 'done' ? finaleColors[state.caseId] : null} />
+    <main className={`page${loading ? ' is-loading' : ''}${state.view === 'done' ? ' is-finale' : ''}`} inert={loading || finaleTransitioning || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen} aria-hidden={loading}>
       <section {...screenProps('home')}><Home onCase={id => dispatch({ type: 'case', id })} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('case')}>{state.view === 'case' && <CaseScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} activePortrait={portrait?.index ?? null} selectedGuess={selectedGuess} onPick={index => dispatch({ type: 'pick', index })} onCode={() => dispatch({ type: 'navigate', view: 'guess' })} onPortrait={(index, source) => {
         portraitOpener.current = source;
         setPortrait({ index, source, rect: source.querySelector('img')!.getBoundingClientRect() });
       }} />}</section>
-      <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={Boolean(state.modal) || settingsModalOpen} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
+      <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={finaleTransitioning || Boolean(state.modal) || settingsModalOpen} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('info')}><DnaViewer active={!loading && state.view === 'info'} onPrepared={onDnaPrepared} onBack={() => dispatch({ type: 'closeInfo' })} /></section>
-      <section {...screenProps('done')}><ResultScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} /></section>
+      <section {...screenProps('done')}>{state.view === 'done' && <ResultScreen caseId={state.caseId} phase={state.finalePhase} onHome={() => dispatch({ type: 'navigate', view: 'home' })} />}</section>
     </main>
+    {(state.finalePhase === 'fade' || state.finalePhase === 'black') && <div className={`finale-blackout is-${state.finalePhase}`} data-phase={state.finalePhase} aria-hidden="true" />}
     {loading && <StartupLoading completed={assets.completed + Number(dnaPrepared)} total={assets.total + 1} failed={assets.failed} waitingForDna={!dnaPrepared}
       onRetry={() => { setAssets({ completed: 0, total: assetCount, failed: 0 }); setAttempt(value => value + 1); }}
       onContinue={() => setContinueWithoutAssets(true)} />}

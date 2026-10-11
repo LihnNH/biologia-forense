@@ -1,6 +1,7 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useLayoutEffect, useReducer } from 'react';
 import { CASES, type CaseId } from '../data/cases';
 import { isCorrectGuess } from './investigation';
+import { FINALE_TIMING, NEXT_FINALE_PHASE, type FinalePhase } from './finale';
 
 export type View = 'home' | 'case' | 'guess' | 'info' | 'done';
 export type ModalKind = 'error' | null;
@@ -11,6 +12,7 @@ interface State {
   guesses: Partial<Record<CaseId, string>>;
   code: string[];
   infoOrigin: 'home' | 'guess';
+  finalePhase: FinalePhase;
 }
 export type Action =
   | { type: 'case'; id: CaseId }
@@ -20,22 +22,26 @@ export type Action =
   | { type: 'pick'; index: number }
   | { type: 'closeModal' }
   | { type: 'code'; code: string[] }
-  | { type: 'verified'; correct: boolean };
+  | { type: 'verified'; correct: boolean }
+  | { type: 'advanceFinale' };
 
 const emptyCode = () => ['', '', '', ''];
 const initialState: State = {
   view: 'home', caseId: 'Veneno', modal: null, guesses: {}, code: emptyCode(),
   infoOrigin: 'home',
+  finalePhase: 'idle',
 };
 
 function reducer(state: State, action: Action): State {
+  const transitioning = state.finalePhase !== 'idle' && state.finalePhase !== 'complete';
+  if (transitioning && action.type !== 'advanceFinale') return state;
   const pending = state.code.every(Boolean);
   switch (action.type) {
     case 'case':
-      return { ...state, caseId: action.id, view: 'case', modal: null, code: emptyCode() };
+      return { ...state, caseId: action.id, view: 'case', modal: null, code: emptyCode(), finalePhase: 'idle' };
     case 'navigate':
       if (action.view === 'guess' && !state.guesses[state.caseId]) return state;
-      return { ...state, view: action.view, modal: null, code: emptyCode() };
+      return { ...state, view: action.view, modal: null, code: emptyCode(), finalePhase: 'idle' };
     case 'info':
       return { ...state, view: 'info', modal: null,
         infoOrigin: state.view === 'guess' ? 'guess' : 'home',
@@ -54,10 +60,20 @@ function reducer(state: State, action: Action): State {
     case 'code':
       return { ...state, code: action.code };
     case 'verified': {
+      if (state.view !== 'guess') return state;
+      if (action.correct) return { ...state, finalePhase: 'fade' };
       const guesses = { ...state.guesses };
       delete guesses[state.caseId];
       return { ...state, guesses, code: emptyCode(),
-        view: action.correct ? 'done' : 'guess', modal: action.correct ? null : 'error' };
+        view: 'guess', modal: 'error' };
+    }
+    case 'advanceFinale': {
+      if (state.finalePhase === 'idle' || state.finalePhase === 'complete') return state;
+      const finalePhase = NEXT_FINALE_PHASE[state.finalePhase];
+      if (finalePhase !== 'title') return { ...state, finalePhase };
+      const guesses = { ...state.guesses };
+      delete guesses[state.caseId];
+      return { ...state, finalePhase, guesses, code: emptyCode(), view: 'done', modal: null };
     }
   }
 }
@@ -71,12 +87,25 @@ export function useInvestigation() {
     : null;
 
   useEffect(() => {
-    if (!verdict || state.view !== 'guess' || state.modal) return;
+    if (!verdict || state.view !== 'guess' || state.modal || state.finalePhase !== 'idle') return;
     const timer = window.setTimeout(() => {
       dispatch({ type: 'verified', correct: verdict === 'correct' });
     }, verdict === 'correct' ? 320 : 420);
     return () => window.clearTimeout(timer);
-  }, [verdict, state.code, state.caseId, state.view, state.modal, selectedGuess]);
+  }, [verdict, state.code, state.caseId, state.view, state.modal, state.finalePhase, selectedGuess]);
+
+  useEffect(() => {
+    if (state.finalePhase === 'idle' || state.finalePhase === 'complete') return;
+    const timer = window.setTimeout(() => dispatch({ type: 'advanceFinale' }), FINALE_TIMING[state.finalePhase]);
+    return () => window.clearTimeout(timer);
+  }, [state.finalePhase]);
+
+  useLayoutEffect(() => {
+    document.body.classList.toggle('finale-open', state.view === 'done');
+    document.body.classList.toggle('finale-title', state.finalePhase === 'title');
+    document.body.classList.toggle('finale-transitioning', state.finalePhase !== 'idle' && state.finalePhase !== 'complete');
+    return () => document.body.classList.remove('finale-open', 'finale-title', 'finale-transitioning');
+  }, [state.view, state.finalePhase]);
 
   useEffect(() => {
     document.body.classList.toggle('dna-viewer-open', state.view === 'info');
@@ -85,7 +114,7 @@ export function useInvestigation() {
 
   useEffect(() => {
     if (state.view === 'home' || state.view === 'case' || state.view === 'info' || state.view === 'done') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: state.view === 'done' ? 'instant' : 'smooth' });
     }
   }, [state.view, state.caseId]);
 

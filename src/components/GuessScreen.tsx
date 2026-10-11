@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { CaseId } from '../data/cases';
+import { suspectNameImages } from '../data/suspectNameImages';
 import { useI18n } from '../i18n/I18n';
 import { sanitizeCode } from '../lib/investigation';
 
@@ -28,6 +29,7 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
   }
 
   const status = t(!selectedGuess ? 'chooseBeforeCode' : verdict ? 'verifying' : 'awaitingCode');
+  const selectedNameImage = suspectNameImages[caseId][selectedGuess];
 
   return <article className="screen-panel guess-panel">
     <div className="case-heading">
@@ -40,7 +42,12 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
       <div className={`guess-selection${selectedGuess ? '' : ' is-empty'}`} id="guess-selection">
         <div className="guess-selection-copy">
           <span className="guess-selection-label">{t('yourGuess')}</span>
-          <strong className="guess-selection-name" id="guess-selected-name">{selectedGuess || t('noSuspect')}</strong>
+          <strong className="guess-selection-name" id="guess-selected-name">
+            {selectedNameImage ? <>
+              <img className="guess-selection-name-image" src={selectedNameImage} alt="" />
+              <span className="sr-only">{selectedGuess}</span>
+            </> : selectedGuess || t('noSuspect')}
+          </strong>
         </div>
       </div>
       <p className="code-instructions">{t('codeInstructions')}</p>
@@ -49,7 +56,7 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
           key={index} ref={element => { inputs.current[index] = element; }}
           className={`code-input${code[index] ? ' filled' : ''}`} type="text" inputMode="text" maxLength={1}
           pattern="[ATCGatcg]" autoCapitalize="characters" autoComplete="off" spellCheck={false}
-          aria-label={label} disabled={!selectedGuess} value={code[index]}
+          aria-label={label} disabled={!selectedGuess || blocked} value={code[index]}
           onChange={event => update(index, event.target.value)}
           onKeyDown={event => {
             if (event.key === 'Backspace' && !code[index] && index > 0) {

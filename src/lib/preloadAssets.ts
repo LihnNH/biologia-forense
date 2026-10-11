@@ -1,10 +1,14 @@
 import { artwork, caseIcons } from '../data/assets';
 import { suspectPortraits } from '../data/suspectPortraits';
+import { suspectNameImages } from '../data/suspectNameImages';
+import { finaleImages } from '../data/finaleImages';
 import favicon from '../../assets/svg/dna-favicon.svg';
 
 const imageUrls = [...new Set([
   ...Object.values(artwork), ...Object.values(caseIcons), favicon,
   ...Object.values(suspectPortraits).flatMap(portraits => Object.values(portraits)),
+  ...Object.values(suspectNameImages).flatMap(names => Object.values(names)),
+  ...Object.values(finaleImages),
 ])];
 
 // Keep decoded images alive so opening a gallery does not decode them again.

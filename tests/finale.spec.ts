@@ -1,0 +1,73 @@
+import { expect, test } from '@playwright/test';
+
+test('o final respeita as pausas e revela o título antes da foto e da solução', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.locator('[data-case="Faca"]').click();
+  await page.locator('#open-pick').click();
+  await page.getByRole('button', { name: 'Marcar Rafael Oliveira como suspeito', exact: true }).click();
+  await page.locator('#open-guess').click();
+  const fields = page.locator('.code-input');
+  for (const [index, character] of Array.from('TAG').entries()) await fields.nth(index).fill(character);
+  await page.clock.install({ time: new Date('2026-10-11T12:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-10-11T12:00:01Z'));
+  await fields.nth(3).fill('C');
+  await page.clock.runFor(319);
+  await expect(page.locator('.finale-blackout')).toHaveCount(0);
+  await page.clock.runFor(1);
+  const blackout = page.locator('.finale-blackout');
+  await expect(blackout).toHaveAttribute('data-phase', 'fade');
+  await expect(blackout).toHaveCSS('animation-duration', '0.335s');
+  await expect(fields.first()).toBeDisabled();
+  await page.clock.runFor(334);
+  await expect(blackout).toHaveAttribute('data-phase', 'fade');
+  await page.clock.runFor(1);
+  await expect(blackout).toHaveAttribute('data-phase', 'black');
+  await expect(blackout).toHaveCSS('opacity', '1');
+  await expect(blackout).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+  expect(await blackout.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    return rect.x === 0 && rect.y === 0 && rect.width === innerWidth && rect.height === innerHeight;
+  })).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('black-pause.png') });
+  await page.clock.runFor(389);
+  await expect(blackout).toHaveAttribute('data-phase', 'black');
+  await page.clock.runFor(1);
+  const screen = page.locator('.finale-screen');
+  const title = page.locator('.finale-case-name');
+  await expect(blackout).toHaveCount(0);
+  await expect(screen).toHaveAttribute('data-phase', 'title');
+  await expect(title).toHaveCSS('animation-duration', '0.145s');
+  await expect(page.locator('.finale-artwork')).toHaveCSS('opacity', '0');
+  await expect(page.locator('.smoke')).toHaveCSS('opacity', '0');
+  expect(await title.evaluate(element => {
+    const bounds = element.getBoundingClientRect();
+    return Math.abs(bounds.top + bounds.height / 2 - innerHeight / 2);
+  })).toBeLessThan(2);
+  await page.clock.runFor(144);
+  await expect(screen).toHaveAttribute('data-phase', 'title');
+  await page.clock.runFor(1);
+  await expect(screen).toHaveAttribute('data-phase', 'reveal');
+  await expect(title).toHaveCSS('animation-duration', '0.61s');
+  await expect(page.locator('.finale-status')).toHaveCSS('opacity', '0');
+  await page.clock.runFor(609);
+  await expect(screen).toHaveAttribute('data-phase', 'reveal');
+  await page.clock.runFor(1);
+  await expect(screen).toHaveAttribute('data-phase', 'complete');
+  await expect(page.locator('#done-home')).toBeEnabled();
+  await expect(page.locator('#result-title')).toBeFocused();
+  await page.screenshot({ path: testInfo.outputPath('finale-complete.png'), animations: 'disabled' });
+  await page.locator('#done-home').click();
+  await expect(page.locator('#home-view')).toBeVisible();
+  await expect(page.locator('body')).not.toHaveClass(/finale-/);
+
+  // A second investigation must replay the ending from its first frame.
+  await page.locator('[data-case="Faca"]').click();
+  await page.locator('#open-pick').click();
+  await page.getByRole('button', { name: 'Marcar Rafael Oliveira como suspeito', exact: true }).click();
+  await page.locator('#open-guess').click();
+  for (const [index, character] of Array.from('TAGC').entries()) await fields.nth(index).fill(character);
+  await page.clock.runFor(320);
+  await expect(blackout).toHaveAttribute('data-phase', 'fade');
+});

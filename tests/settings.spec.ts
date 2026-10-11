@@ -99,7 +99,8 @@ for (const id of CASE_ORDER) {
     await expect(page.getByLabel('First code character')).toBeFocused();
     for (let index = 0; index < 4; index++) await page.locator('.code-input').nth(index).fill(CASE_RESULTS[id].code[index]);
     await expect(page.locator('#result-title')).toHaveText(`${caseLabelsEn[id]}: case solved`);
-    await expect(page.locator('#result-explanation')).toContainText('both parts of the investigation');
+    await expect(page.locator('#result-explanation')).not.toContainText('both parts of the investigation');
+    await expect(page.locator('#result-explanation')).not.toContainText(/The culprit is|The person responsible is/);
     await expect(page.locator('#culprit-name')).toHaveText(CASE_RESULTS[id].culprit);
   });
 }

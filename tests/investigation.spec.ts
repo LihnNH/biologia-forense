@@ -15,6 +15,14 @@ async function enterCode(page: Page, code: string) {
   for (let index = 0; index < 4; index++) await fields.nth(index).fill(code[index]);
 }
 
+async function readFinaleSmokeTint(page: Page) {
+  return page.locator('canvas.smoke').evaluate(element => {
+    const gl = (element as HTMLCanvasElement).getContext('webgl');
+    const program = gl?.getParameter(gl.CURRENT_PROGRAM) as WebGLProgram | null;
+    return gl && program ? gl.getUniform(program, gl.getUniformLocation(program, 'u_finale_tint')!) as number : null;
+  });
+}
+
 test('carrega os 19 retratos antes de liberar a página e mantém o DNA preparado', async ({ page }, testInfo) => {
   const portraitsRequested = new Set<string>();
   let modelsRequested = 0;
@@ -136,20 +144,41 @@ for (const id of CASE_ORDER) {
     expect(errors).toEqual([]);
   });
 
-  test(`resolve ${CASE_LABELS[id]} apenas com o culpado e código corretos`, async ({ page }) => {
+  test(`resolve ${CASE_LABELS[id]} apenas com o culpado e código corretos`, async ({ page }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
+    await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto('/');
     await page.locator(`[data-case="${id}"]`).click();
     await expect(page.locator('#open-guess')).toBeDisabled();
     await chooseSuspect(page, CASE_RESULTS[id].culprit);
     await page.locator('#open-guess').click();
     await expect(page.locator('.code-input').first()).toBeFocused();
+    await expect.poll(() => readFinaleSmokeTint(page)).toBe(0);
     await enterCode(page, CASE_RESULTS[id].code.toLowerCase());
     await expect(page.locator('#done-view')).toBeVisible();
     await expect(page.locator('#culprit-name')).toHaveText(CASE_RESULTS[id].culprit);
     await expect(page.locator('#result-title')).toContainText(`${CASE_LABELS[id]}: caso solucionado`);
+    await expect(page.locator('.finale-screen')).toHaveAttribute('data-phase', 'complete');
+    await expect(page.locator('.finale-status')).toHaveCSS('opacity', '1');
+    await expect(page.locator('.finale-content')).toHaveCSS('opacity', '1');
+    await expect(page.locator('canvas.smoke')).toBeVisible();
+    await expect.poll(() => readFinaleSmokeTint(page)).toBe(1);
+    await expect(page.locator('#result-explanation > p').first()).toBeVisible();
+    await expect(page.locator('#result-explanation')).not.toContainText('as duas partes da investigação');
+    await expect(page.locator('#result-explanation')).not.toContainText(/O culpado é|A responsável é/);
+    await expect(page.locator('.finale-culprit')).toHaveText(`O culpado era ${CASE_RESULTS[id].culprit}`);
+    await expect(page.locator('#done-home')).toBeVisible();
+    await expect(page.locator('.finale-name-image')).toBeVisible();
+    await expect(page.locator('.finale-artwork img')).toHaveAttribute('alt', `Foto de ${CASE_RESULTS[id].culprit}`);
+    await expect(page.locator('.finale-artwork img')).toHaveAttribute('src', /-finale-/);
+    await expect.poll(() => page.locator('.finale-screen img').evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0))).toBe(true);
+    expect(await page.locator('.finale-name-image').evaluate(image => image.getBoundingClientRect().height)).toBeLessThanOrEqual(46);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1440);
+    await page.screenshot({ path: testInfo.outputPath('solution-desktop.png'), fullPage: true });
     await page.locator('#done-home').click();
+    await expect.poll(() => readFinaleSmokeTint(page)).toBe(0);
     await page.locator(`[data-case="${id}"]`).click();
     await expect(page.locator('#open-guess')).toBeDisabled();
     await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(0);

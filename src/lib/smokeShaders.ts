@@ -6,6 +6,8 @@ export const smokeFragmentShader = `precision highp float;
         uniform vec2 u_resolution;
         uniform float u_time;
         uniform float u_density;
+        uniform vec3 u_finale_color;
+        uniform float u_finale_tint;
 
         // Ruído suave com hash rápido; tudo gerado pela GPU, sem imagens.
         float hash(vec2 p) {
@@ -59,12 +61,17 @@ export const smokeFragmentShader = `precision highp float;
           density += smoothstep(0.30, 0.72, broad) * fadeUp * 0.13;
           density = clamp(density, 0.0, 1.0);
 
-          // O vermelho colore só a fumaça no canto inferior direito, sem halo fixo.
           vec3 smokeColor = mix(vec3(0.30, 0.30, 0.31), vec3(0.44, 0.44, 0.46), detail);
-          vec2 screenUv = gl_FragCoord.xy / u_resolution;
-          vec2 redRegion = (screenUv - vec2(0.88, 0.25)) / vec2(0.32, 0.38);
-          float redTint = 1.0 - smoothstep(0.0, 1.0, length(redRegion));
-          smokeColor = mix(smokeColor, vec3(0.50, 0.16, 0.19), redTint * 0.55);
+          if (u_finale_tint > 0.5) {
+            // No finale, um tom suave da foto colore toda a fumaça.
+            smokeColor = mix(smokeColor, u_finale_color, 0.42);
+          } else {
+            // Nas outras telas, mantém o vermelho só no canto inferior direito.
+            vec2 screenUv = gl_FragCoord.xy / u_resolution;
+            vec2 redRegion = (screenUv - vec2(0.88, 0.25)) / vec2(0.32, 0.38);
+            float redTint = 1.0 - smoothstep(0.0, 1.0, length(redRegion));
+            smokeColor = mix(smokeColor, vec3(0.50, 0.16, 0.19), redTint * 0.55);
+          }
           float alpha = density * 0.80 * u_density;
           gl_FragColor = vec4(smokeColor, clamp(alpha, 0.0, 0.68));
         }`;
