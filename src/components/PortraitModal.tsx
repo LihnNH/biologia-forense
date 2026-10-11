@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom';
 import type { Suspect } from '../data/cases';
 import { Markdown } from './Markdown';
+import { useI18n } from '../i18n/I18n';
 
 export interface PortraitOrigin {
   index: number;
@@ -23,6 +24,7 @@ export function PortraitModal({ origin, suspect, image, onClose }: {
   image: string;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const panel = useRef<HTMLDivElement>(null);
   const flight = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -119,10 +121,10 @@ export function PortraitModal({ origin, suspect, image, onClose }: {
     <div className="portrait-backdrop" ref={backdrop} onClick={requestClose} aria-hidden="true" />
     <div className="modal-panel portrait-panel" ref={panel} tabIndex={-1}>
       <div className="portrait-content" ref={content}>
-        <p className="result-kicker">Informações do suspeito</p>
+        <p className="result-kicker">{t('suspectDetails')}</p>
         <h2 className="modal-title" id="portrait-title">{suspect.name}</h2>
         <Markdown className="suspect-text" text={`### ${suspect.role}\n\n${suspect.statement}`} />
-        <button className="back-button" type="button" onClick={requestClose}>Fechar</button>
+        <button className="back-button" type="button" onClick={requestClose}>{t('close')}</button>
       </div>
     </div>
     <div className="portrait-flight" ref={flight} aria-hidden="true"><img src={image} alt="" /></div>

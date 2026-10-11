@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { CASES, CASE_LABELS, type CaseId } from '../data/cases';
+import { CASES, type CaseId } from '../data/cases';
+import { useI18n } from '../i18n/I18n';
 import { suspectPortraits } from '../data/suspectPortraits';
 
 export function CaseScreen({ caseId, onHome, activePortrait, onPortrait, selectedGuess, onPick, onCode }: {
@@ -11,6 +12,7 @@ export function CaseScreen({ caseId, onHome, activePortrait, onPortrait, selecte
   onPick: (index: number) => void;
   onCode: () => void;
 }) {
+  const { t, cases, caseLabels } = useI18n();
   const [selecting, setSelecting] = useState(false);
   const gallery = useRef<HTMLUListElement>(null);
   const pickButton = useRef<HTMLButtonElement>(null);
@@ -44,28 +46,28 @@ export function CaseScreen({ caseId, onHome, activePortrait, onPortrait, selecte
   }
   return <article className="screen-panel case-panel">
     <div className="case-heading">
-      <button className="back-button case-back" type="button" onClick={onHome} aria-label="Voltar" title="Voltar aos casos">
+      <button className="back-button case-back" type="button" onClick={onHome} aria-label={t('back')} title={t('backToCases')}>
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </button>
-      <h2 className="screen-title" id="case-title">{CASE_LABELS[caseId]}</h2>
+      <h2 className="screen-title" id="case-title">{caseLabels[caseId]}</h2>
     </div>
-    <ul className={`suspect-gallery${selecting ? ' is-picking' : ''}`} ref={gallery} aria-label={`Suspeitos — ${CASE_LABELS[caseId]}`}>
-      {CASES[caseId].suspects.map((suspect, index) => <li className={`suspect-portrait${selectedGuess === suspect.name ? ' is-guess' : ''}`} style={{ '--portrait-tilt': `${tilts[index]}deg` } as CSSProperties} key={suspect.name}>
-        <button className={`portrait-button${activePortrait === index ? ' is-expanded' : ''}`} type="button" aria-label={selecting ? `Marcar ${suspect.name} como suspeito` : `Ver informações de ${suspect.name}`} aria-pressed={selecting ? selectedGuess === suspect.name : undefined} aria-haspopup={selecting ? undefined : 'dialog'} onClick={event => {
+    <ul className={`suspect-gallery${selecting ? ' is-picking' : ''}`} ref={gallery} aria-label={t('suspects', { case: caseLabels[caseId] })}>
+      {cases[caseId].suspects.map((suspect, index) => <li className={`suspect-portrait${selectedGuess === suspect.name ? ' is-guess' : ''}`} style={{ '--portrait-tilt': `${tilts[index]}deg` } as CSSProperties} key={suspect.name}>
+        <button className={`portrait-button${activePortrait === index ? ' is-expanded' : ''}`} type="button" aria-label={t(selecting ? 'markSuspect' : 'suspectInfo', { name: suspect.name })} aria-pressed={selecting ? selectedGuess === suspect.name : undefined} aria-haspopup={selecting ? undefined : 'dialog'} onClick={event => {
           if (selecting) {
             wiggles.current.forEach(animation => animation.cancel());
             onPick(index);
             setSelecting(false);
           } else onPortrait(index, event.currentTarget);
         }}>
-          <img src={suspectPortraits[caseId][suspect.name]} alt={`Foto de ${suspect.name}`} width={900} height={1420} decoding="async" />
+          <img src={suspectPortraits[caseId][suspect.name]} alt={t('photo', { name: suspect.name })} width={900} height={1420} decoding="async" />
         </button>
       </li>)}
     </ul>
     <div className="case-actions">
-      <button className="action-button" type="button" id="open-pick" ref={pickButton} aria-pressed={selecting} onClick={togglePicking}>{selecting ? 'Depoimentos' : 'Palpite'}</button>
-      <button className="action-button" type="button" id="open-guess" disabled={!selectedGuess} onClick={onCode}>Código</button>
+      <button className="action-button" type="button" id="open-pick" ref={pickButton} aria-pressed={selecting} onClick={togglePicking}>{t(selecting ? 'statements' : 'guess')}</button>
+      <button className="action-button" type="button" id="open-guess" disabled={!selectedGuess} onClick={onCode}>{t('code')}</button>
     </div>
-    <p className="sr-only" role="status" aria-live="polite">{selecting ? 'Clique na foto para marcar seu suspeito. Escape cancela a seleção.' : selectedGuess ? `Seu palpite: ${selectedGuess}. Código disponível.` : 'Escolha um suspeito pelo botão Palpite para liberar o código.'}</p>
+    <p className="sr-only" role="status" aria-live="polite">{selecting ? t('pickInstructions') : selectedGuess ? t('guessAvailable', { name: selectedGuess }) : t('chooseSuspect')}</p>
   </article>;
 }

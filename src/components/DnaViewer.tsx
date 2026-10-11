@@ -1,16 +1,17 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
-import { hotspots } from '../data/dna';
+import { useI18n } from '../i18n/I18n';
 import { createDnaScene, type DnaScene } from '../lib/dnaScene';
 import { DnaFallback } from './DnaFallback';
 
 export default function DnaViewer({ active, onBack, onPrepared }: { active: boolean; onBack: () => void; onPrepared: () => void }) {
+  const { t, hotspots } = useI18n();
   const container = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const callout = useRef<HTMLElement>(null);
   const path = useRef<SVGPathElement>(null);
   const controller = useRef<DnaScene | null>(null);
   const [ready, setReady] = useState(false);
-  const [fallback, setFallback] = useState('');
+  const [fallback, setFallback] = useState<'modelFailed' | 'no3d' | null>(null);
   const [dragging, setDragging] = useState(false);
   const [titleOpen, setTitleOpen] = useState(false);
   const [licenseOpen, setLicenseOpen] = useState(false);
@@ -47,11 +48,11 @@ export default function DnaViewer({ active, onBack, onPrepared }: { active: bool
     try {
       scene = createDnaScene({ canvas: canvas.current, container: container.current,
         onReady: () => { setReady(true); onPrepared(); },
-        onError: () => { setFallback('O modelo 3D não pôde ser aberto. Exibindo uma representação compatível.'); onPrepared(); },
+        onError: () => { setFallback('modelFailed'); onPrepared(); },
         onDragging: setDragging, onFrame: positionCallout });
       controller.current = scene;
     } catch {
-      setFallback('A aceleração 3D não está disponível neste navegador. Exibindo uma representação compatível.');
+      setFallback('no3d');
       onPrepared();
       return;
     }
@@ -93,28 +94,28 @@ export default function DnaViewer({ active, onBack, onPrepared }: { active: bool
   }, []);
 
   const hotspot = displayedHotspot === null ? null : hotspots[displayedHotspot - 1];
-  return <article ref={container} className={`dna-viewer-card${dragging ? ' dragging' : ''}${fallback ? ' using-2d-fallback' : ''}`} id="dna-viewer" aria-label={fallback ? 'Representação bidimensional animada de uma molécula de DNA.' : 'Modelo tridimensional de DNA. Arraste para girar e use a roda do mouse para aproximar.'}>
-    <canvas ref={canvas} tabIndex={0} aria-label="DNA 3D interativo" hidden={Boolean(fallback)} />
+  return <article ref={container} className={`dna-viewer-card${dragging ? ' dragging' : ''}${fallback ? ' using-2d-fallback' : ''}`} id="dna-viewer" aria-label={t(fallback ? 'dna2dLabel' : 'dna3dLabel')}>
+    <canvas ref={canvas} tabIndex={0} aria-label={t('interactiveDna')} hidden={Boolean(fallback)} />
     <div className="dna-viewer-topbar">
       <div className="dna-title-stack">
         <button className="screen-title dna-viewer-title dna-title-button" type="button" id="dna-title-toggle" aria-expanded={titleOpen} aria-controls="dna-title-reveal" onClick={() => setTitleOpen(open => !open)}>DNA</button>
-        <p className={`dna-title-reveal${titleOpen ? ' is-open' : ''}`} id="dna-title-reveal" aria-hidden={!titleOpen}>O <em>DNA</em> é a molécula que armazena e<br />transmite as <em>informações genéticas</em> dos seres vivos. Formado por sequências de nucleotídeos, ele contém as instruções necessárias para o funcionamento, desenvolvimento e reprodução das células.</p>
+        <p className={`dna-title-reveal${titleOpen ? ' is-open' : ''}`} id="dna-title-reveal" aria-hidden={!titleOpen}>{t('dnaIntroBefore')}<em>DNA</em>{t('dnaIntroAfter')}<br />{t('dnaIntroTransmits')}<em>{t('geneticInfo')}</em>{t('dnaIntroEnd')}</p>
       </div>
-      <button className="back-button" type="button" id="close-dna-info" onClick={onBack}>Voltar</button>
+      <button className="back-button" type="button" id="close-dna-info" onClick={onBack}>{t('back')}</button>
     </div>
-    {fallback && <DnaFallback message={fallback} />}
+    {fallback && <DnaFallback message={t(fallback)} />}
     <div className={`dna-callout-layer${selectedHotspot !== null && hotspot ? ' is-visible' : ''}${switching ? ' is-switching' : ''}`} id="dna-callout-layer" aria-hidden={selectedHotspot === null}>
       <svg className="dna-callout-lines" aria-hidden="true"><path ref={path} className="dna-callout-path" id="dna-callout-path" /></svg>
       <article ref={callout} className="dna-callout" id="dna-callout" role="status" aria-live="polite">
-        <span className="dna-callout-kicker" id="dna-callout-kicker">{hotspot ? `Tecla ${hotspot.id}` : ''}</span>
+        <span className="dna-callout-kicker" id="dna-callout-kicker">{hotspot ? t('key', { number: hotspot.id }) : ''}</span>
         <h3 className="dna-callout-title" id="dna-callout-title">{hotspot?.title}</h3>
         <p className="dna-callout-text" id="dna-callout-text">{hotspot?.text}</p>
       </article>
     </div>
-    <p className={`dna-3d-status${fallback ? ' fallback' : ready ? ' hidden' : ''}`} id="dna-3d-status" role="status">{fallback ? 'Modo compatível 2D ativo' : 'Carregando DNA 3D...'}</p>
+    <p className={`dna-3d-status${fallback ? ' fallback' : ready ? ' hidden' : ''}`} id="dna-3d-status" role="status">{t(fallback ? 'compatible2d' : 'loadingDna')}</p>
     <aside className={`dna-license-card${licenseOpen ? ' is-open' : ''}`} id="dna-license-card" aria-hidden={!licenseOpen} onPointerDown={event => event.stopPropagation()}>
-      <h3 className="dna-license-title">Licença</h3>
-      <p className="dna-license-text">O modelo <a href="https://skfb.ly/onW7w" target="_blank" rel="noopener noreferrer">“DNA”</a>, de LucasPresoto, está licenciado sob a licença <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons Atribuição 4.0 Internacional</a>.</p>
+      <h3 className="dna-license-title">{t('license')}</h3>
+      <p className="dna-license-text">{t('licenseBefore')}<a href="https://skfb.ly/onW7w" target="_blank" rel="noopener noreferrer">“DNA”</a>{t('licenseAfter')}<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">{t('licenseName')}</a>.</p>
     </aside>
   </article>;
 }

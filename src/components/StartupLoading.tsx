@@ -1,3 +1,5 @@
+import { useI18n } from '../i18n/I18n';
+
 export function StartupLoading({ completed, total, failed, waitingForDna, onRetry, onContinue }: {
   completed: number;
   total: number;
@@ -6,22 +8,23 @@ export function StartupLoading({ completed, total, failed, waitingForDna, onRetr
   onRetry: () => void;
   onContinue: () => void;
 }) {
+  const { t } = useI18n();
   const finished = completed === total;
   const percent = Math.round(completed / total * 100);
   return <section className="startup-screen" aria-labelledby="startup-title" aria-busy={!finished}>
     <div className="startup-content">
-      <span className="startup-kicker">Biologia Forense</span>
-      <h1 className="startup-title" id="startup-title">Preparando a investigação</h1>
+      <span className="startup-kicker">{t('appTitle')}</span>
+      <h1 className="startup-title" id="startup-title">{t('preparing')}</h1>
       <p className="startup-copy" role="status">{finished && failed
-        ? 'Alguns recursos não carregaram. Você pode tentar novamente ou continuar.'
-        : waitingForDna && completed >= total - 1 ? 'Preparando a visualização do DNA…' : 'Carregando fotos, fontes e recursos…'}</p>
+        ? t('assetsFailed')
+        : waitingForDna && completed >= total - 1 ? t('preparingDna') : t('loadingAssets')}</p>
       <div className="startup-progress-row">
-        <progress className="startup-progress" value={completed} max={total} aria-label="Carregamento inicial" />
+        <progress className="startup-progress" value={completed} max={total} aria-label={t('initialLoading')} />
         <span className="startup-percent" aria-hidden="true">{percent}%</span>
       </div>
       {finished && failed > 0 && <div className="startup-actions">
-        <button className="action-button" type="button" onClick={onRetry}>Tentar novamente</button>
-        <button className="back-button" type="button" onClick={onContinue}>Continuar</button>
+        <button className="action-button" type="button" onClick={onRetry}>{t('retry')}</button>
+        <button className="back-button" type="button" onClick={onContinue}>{t('continue')}</button>
       </div>}
     </div>
   </section>;

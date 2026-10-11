@@ -83,13 +83,7 @@ export const CASES: Record<CaseId, CaseData> = {
         statement: String.raw`**Idade:** 39 anos  
 **Tempo no restaurante:** 11 anos
 
-> "O Lucas era um bom garoto, mas ultimamente vinha cometendo muitos erros durante o expediente. Eu precisava chamar a atenção dele quase todos os dias.
->
-> Hoje tivemos uma discussão porque ele esqueceu de fazer um pedido importante para o estoque.
->
-> Depois disso, cada um voltou ao trabalho. Eu permaneci preparando os últimos pratos antes do fechamento.
->
-> Quando ouvi os gritos, fui um dos primeiros a correr para ver o que havia acontecido."`
+> "Lucas vinha cometendo erros no trabalho, e hoje discutimos porque ele esqueceu um pedido do estoque. Depois, voltei a preparar os pratos e fui um dos primeiros a chegar quando ouvi os gritos."`
       },
       {
         name: 'Mariana Costa',
@@ -129,11 +123,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 42,
         statement: String.raw`**Idade:** 42 anos
 
-> "Eu estava lavando o piso da cozinha perto do horário de fechar.
->
-> Por isso o chão estava molhado.
->
-> Quando encontrei o Lucas caído, saí correndo para chamar ajuda."`
+> "Eu estava lavando o piso da cozinha perto do horário de fechar, por conta disso, o chão estava molhado. Quando encontrei o Lucas caído, saí correndo para chamar ajuda."`
       }
     ]
   },
@@ -142,7 +132,7 @@ export const CASES: Record<CaseId, CaseData> = {
     suspects: [
       {
         name: 'João Batista',
-        role: 'Mestre de obras',
+        role: 'Engenheiro',
         age: 52,
         statement: String.raw`**Idade:** 52 anos
 
@@ -175,10 +165,10 @@ export const CASES: Record<CaseId, CaseData> = {
       {
         name: 'Laura Almeida',
         role: 'Filha da vítima',
-        age: 14,
-        statement: String.raw`**Idade:** 14 anos
+        age: 18,
+        statement: String.raw`**Idade:** 18 anos
 
-> "Cheguei da escola e subi para o meu quarto. Eu precisava conversar com meu pai, mas desisti. Coloquei fones de ouvido e fiquei lá em cima. Só desci quando ouvi as pessoas correndo."`
+> "Cheguei do colégio e subi para o meu quarto. Eu precisava conversar com meu pai, mas desisti. Coloquei fones de ouvido e fiquei lá em cima. Só desci quando ouvi as pessoas correndo."`
       }
     ]
   },
@@ -199,7 +189,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 50,
         statement: String.raw`**Idade:** 50 anos
 
-> "Eu estava na casa a convite deles para jantar. Depois que terminamos de comer, fui até o escritório organizar alguns papéis da sociedade. Fiquei chocado quando ouvimos os gritos da Helena. O Rogério nunca demonstrou que tiraria a própria vida, mas a pressão estava insuportável."`
+> "Fui convidado para jantar e, depois, estava no escritório cuidando de documentos da sociedade quando ouvi os gritos de Helena. Fiquei chocado. Rogério nunca deu sinais de que tiraria a própria vida, apesar da pressão insuportável."`
       },
       {
         name: 'Tereza',
@@ -207,7 +197,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 41,
         statement: String.raw`**Idade:** 41 anos
 
-> "Eu já tinha terminado o meu turno e estava arrumando a cozinha antes de ir para o quarto dos fundos onde durmo. Não ouvi nenhuma briga, apenas o barulho da TV na sala e eles conversando baixo. Só saí quando a patroa começou a gritar por socorro."`
+> "Eu já tinha terminado o meu turno e estava arrumando a cozinha antes de ir para o quarto dos fundos onde durmo. Só saí quando a patroa começou a gritar por socorro."`
       },
       {
         name: 'Sebastião',
@@ -215,7 +205,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 58,
         statement: String.raw`**Idade:** 58 anos
 
-> "Eu estava na edícula cuidando das ferramentas e conferindo o portão eletrônico. Vi o Marcos chegar por volta das 19h. De vez em quando o patrão me pedia para ajudar a mexer na parte náutica da decoração, mas faz tempo que eu não tocava naquelas cordas."`
+> "Eu estava na edícula cuidando das ferramentas e do portão eletrônico. Vi Marcos chegar por volta das 19h. Às vezes ajudava o patrão com as cordas da decoração náutica, mas fazia tempo que não mexia nelas."`
       }
     ]
   }

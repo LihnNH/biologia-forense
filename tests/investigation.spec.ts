@@ -35,7 +35,7 @@ test('carrega os 19 retratos antes de liberar a página e mantém o DNA preparad
     await pausedPortrait;
     await route.continue();
   });
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('progressbar', { name: 'Carregamento inicial' })).toBeVisible();
   await expect(page.locator('main.page')).toHaveAttribute('inert', '');
   await expect(page.locator('#home-view')).toBeHidden();

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { Background } from './components/Background';
 import { Home } from './components/Home';
 import { CaseScreen } from './components/CaseScreen';
@@ -6,14 +6,37 @@ import { GuessScreen } from './components/GuessScreen';
 import { ResultScreen } from './components/ResultScreen';
 import { InvestigationModals } from './components/InvestigationModals';
 import { PortraitModal, type PortraitOrigin } from './components/PortraitModal';
-import { CASES } from './data/cases';
+import { SettingsModal } from './components/SettingsModal';
+import { useI18n } from './i18n/I18n';
 import { suspectPortraits } from './data/suspectPortraits';
 import DnaViewer from './components/DnaViewer';
 import { StartupLoading } from './components/StartupLoading';
 import { assetCount, preloadAssets, type AssetProgress } from './lib/preloadAssets';
 import { useInvestigation, type View } from './lib/useInvestigation';
+import { useSmokeSettings } from './lib/smokeSettings';
 
 export default function App() {
+  const { cases } = useI18n();
+  const { settings: smokeSettings, setSettings: setSmokeSettings } = useSmokeSettings();
+  const [settingsModalPhase, setSettingsModalPhase] = useState<'closed' | 'open' | 'closing'>('closed');
+  const settingsModalOpen = settingsModalPhase !== 'closed';
+  const closeSettingsModal = useCallback(() => setSettingsModalPhase(phase => phase === 'closed' ? phase : 'closing'), []);
+  const handleGlobalKey = useEffectEvent((event: KeyboardEvent) => {
+    if (settingsModalOpen) {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeSettingsModal(); return; }
+      if (event.key.toLowerCase() !== 'c') return;
+    }
+    if (event.key.toLowerCase() !== 'c' || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
+    const target = event.target;
+    if (!settingsModalOpen && target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (!event.repeat) setSettingsModalPhase(phase => phase === 'open' ? 'closing' : 'open');
+  });
+  useEffect(() => {
+    document.addEventListener('keydown', handleGlobalKey, true);
+    return () => document.removeEventListener('keydown', handleGlobalKey, true);
+  }, []);
   const [assets, setAssets] = useState<AssetProgress>({ completed: 0, total: assetCount, failed: 0 });
   const [dnaPrepared, setDnaPrepared] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -51,14 +74,14 @@ export default function App() {
     id: `${view}-view`, 'data-view': view, hidden: state.view !== view,
   });
   return <>
-    <Background active={!loading} />
-    <main className={`page${loading ? ' is-loading' : ''}`} inert={loading || Boolean(state.modal) || Boolean(portrait)} aria-hidden={loading}>
+    <Background active={!loading} smokeSettings={smokeSettings} />
+    <main className={`page${loading ? ' is-loading' : ''}`} inert={loading || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen} aria-hidden={loading}>
       <section {...screenProps('home')}><Home onCase={id => dispatch({ type: 'case', id })} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('case')}>{state.view === 'case' && <CaseScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} activePortrait={portrait?.index ?? null} selectedGuess={selectedGuess} onPick={index => dispatch({ type: 'pick', index })} onCode={() => dispatch({ type: 'navigate', view: 'guess' })} onPortrait={(index, source) => {
         portraitOpener.current = source;
         setPortrait({ index, source, rect: source.querySelector('img')!.getBoundingClientRect() });
       }} />}</section>
-      <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={Boolean(state.modal)} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
+      <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={Boolean(state.modal) || settingsModalOpen} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('info')}><DnaViewer active={!loading && state.view === 'info'} onPrepared={onDnaPrepared} onBack={() => dispatch({ type: 'closeInfo' })} /></section>
       <section {...screenProps('done')}><ResultScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} /></section>
     </main>
@@ -66,6 +89,7 @@ export default function App() {
       onRetry={() => { setAssets({ completed: 0, total: assetCount, failed: 0 }); setAttempt(value => value + 1); }}
       onContinue={() => setContinueWithoutAssets(true)} />}
     <InvestigationModals modal={state.modal} onClose={() => dispatch({ type: 'closeModal' })} />
-    {portrait && <PortraitModal origin={portrait} suspect={CASES[state.caseId].suspects[portrait.index]} image={suspectPortraits[state.caseId][CASES[state.caseId].suspects[portrait.index].name]} onClose={closePortrait} />}
+    {portrait && <PortraitModal origin={portrait} suspect={cases[state.caseId].suspects[portrait.index]} image={suspectPortraits[state.caseId][cases[state.caseId].suspects[portrait.index].name]} onClose={closePortrait} />}
+    {settingsModalOpen && <SettingsModal smokeSettings={smokeSettings} onSmokeChange={setSmokeSettings} closing={settingsModalPhase === 'closing'} onExited={() => setSettingsModalPhase(phase => phase === 'closing' ? 'closed' : phase)} onClose={closeSettingsModal} />}
   </>;
 }

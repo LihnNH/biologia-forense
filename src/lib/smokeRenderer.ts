@@ -1,10 +1,7 @@
 import { smokeFragmentShader, smokeVertexShader } from './smokeShaders';
+import { defaultSmokeSettings, type SmokeSettings } from './smokeSettings';
 
-const frameInterval = 1000 / 40;
-const density = 14 / 100 * 1.55;
-const speed = .15 + 23 / 100 * 1.7;
-
-export function createSmokeRenderer(canvas: HTMLCanvasElement) {
+export function createSmokeRenderer(canvas: HTMLCanvasElement, initialSettings: SmokeSettings = defaultSmokeSettings) {
   const gl = canvas.getContext('webgl', {
     alpha: true, antialias: false, depth: false, stencil: false,
     premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power',
@@ -17,6 +14,8 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement) {
   let frame = 0;
   let elapsed = 0;
   let previousTime: number | null = null;
+  let previousAnimationTime: number | null = null;
+  let settings = { ...initialSettings };
   let active = false;
   let lost = false;
   let disposed = false;
@@ -65,7 +64,7 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement) {
         time: gl!.getUniformLocation(program, 'u_time'),
         density: gl!.getUniformLocation(program, 'u_density'),
       };
-      canvas.style.visibility = '';
+      canvas.style.visibility = settings.enabled ? '' : 'hidden';
     } catch {
       release();
       canvas.style.visibility = 'hidden';
@@ -78,20 +77,21 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement) {
     if (!uniforms || lost || disposed) return;
     gl!.uniform2f(uniforms.resolution, canvas.width, canvas.height);
     gl!.uniform1f(uniforms.time, elapsed);
-    gl!.uniform1f(uniforms.density, density);
+    gl!.uniform1f(uniforms.density, settings.strength / 100 * 1.55);
     gl!.clearColor(0, 0, 0, 0);
     gl!.clear(gl!.COLOR_BUFFER_BIT);
     gl!.drawArrays(gl!.TRIANGLES, 0, 6);
   }
 
-  function running() { return active && !motion.matches && !document.hidden && !lost && !disposed && Boolean(uniforms); }
+  function running() { return active && settings.enabled && settings.speed > 0 && !motion.matches && !document.hidden && !lost && !disposed && Boolean(uniforms); }
 
   function draw(now: number) {
     frame = 0;
     if (!running()) return;
-    if (previousTime === null || now - previousTime >= frameInterval) {
-      // No catch-up draws: every animated frame is at least 25 ms apart.
-      if (previousTime !== null) elapsed += Math.min((now - previousTime) / 1000, .1) * speed;
+    // Advance time independently of the FPS limit so a lower limit doesn't slow the smoke.
+    if (previousAnimationTime !== null) elapsed += Math.min((now - previousAnimationTime) / 1000, .1) * (.15 + settings.speed / 100 * 1.7);
+    previousAnimationTime = now;
+    if (previousTime === null || now - previousTime >= 1000 / settings.fps) {
       previousTime = now;
       paint();
     }
@@ -102,13 +102,14 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement) {
     cancelAnimationFrame(frame);
     frame = 0;
     previousTime = null;
+    previousAnimationTime = null;
     if (running()) frame = requestAnimationFrame(draw);
   }
 
   function resize() {
     const mobile = matchMedia('(max-width: 700px), (pointer: coarse)').matches;
     // Soft noise needs little resolution; cap the longest edge to reduce GPU work.
-    const scale = Math.min(devicePixelRatio || 1, (mobile ? 720 : 960) / Math.max(innerWidth, innerHeight));
+    const scale = Math.min(devicePixelRatio || 1, (mobile ? 720 : 960) * settings.quality / 100 / Math.max(innerWidth, innerHeight));
     canvas.width = Math.max(1, Math.round(innerWidth * scale));
     canvas.height = Math.max(1, Math.round(innerHeight * scale));
     gl!.viewport(0, 0, canvas.width, canvas.height);
@@ -138,6 +139,15 @@ export function createSmokeRenderer(canvas: HTMLCanvasElement) {
 
   return {
     setActive(value: boolean) { active = value; refresh(); },
+    setSettings(value: SmokeSettings) {
+      const qualityChanged = settings.quality !== value.quality;
+      const timingChanged = settings.fps !== value.fps || settings.speed !== value.speed || settings.enabled !== value.enabled;
+      settings = { ...value };
+      canvas.style.visibility = settings.enabled && uniforms ? '' : 'hidden';
+      if (qualityChanged) resize();
+      if (settings.enabled && !lost && !disposed) paint();
+      if (timingChanged) refresh();
+    },
     destroy() {
       disposed = true;
       refresh();

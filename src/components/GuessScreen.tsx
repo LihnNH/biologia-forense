@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { CASE_LABELS, type CaseId } from '../data/cases';
+import type { CaseId } from '../data/cases';
+import { useI18n } from '../i18n/I18n';
 import { sanitizeCode } from '../lib/investigation';
 
 export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verdict, onCode, onBack, onInfo }: {
@@ -13,6 +14,7 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
   onBack: () => void;
   onInfo: () => void;
 }) {
+  const { t, messages, caseLabels } = useI18n();
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   useEffect(() => {
     if (active && !blocked && selectedGuess) inputs.current[0]?.focus();
@@ -25,28 +27,27 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
     if (next[index] && index < 3) inputs.current[index + 1]?.focus();
   }
 
-  const status = !selectedGuess ? 'Escolha um suspeito antes de inserir o código.'
-    : verdict ? 'Verificando palpite...' : 'Aguardando código...';
+  const status = t(!selectedGuess ? 'chooseBeforeCode' : verdict ? 'verifying' : 'awaitingCode');
 
   return <article className="screen-panel">
     <div className="screen-topbar">
-      <h2 className="screen-title" id="guess-title">Código - {CASE_LABELS[caseId]}</h2>
-      <button className="back-button" type="button" id="back-to-case" onClick={onBack}>Voltar</button>
+      <h2 className="screen-title" id="guess-title">{t('code')} - {caseLabels[caseId]}</h2>
+      <button className="back-button" type="button" id="back-to-case" onClick={onBack}>{t('back')}</button>
     </div>
     <form className="guess-form" id="guess-form" autoComplete="off" onSubmit={event => event.preventDefault()}>
       <div className={`guess-selection${selectedGuess ? '' : ' is-empty'}`} id="guess-selection">
         <div className="guess-selection-copy">
-          <span className="guess-selection-label">Seu palpite</span>
-          <strong className="guess-selection-name" id="guess-selected-name">{selectedGuess || 'Nenhum suspeito marcado'}</strong>
+          <span className="guess-selection-label">{t('yourGuess')}</span>
+          <strong className="guess-selection-name" id="guess-selected-name">{selectedGuess || t('noSuspect')}</strong>
         </div>
       </div>
-      <p className="code-instructions">Digite o código de quatro caracteres obtido na investigação. A verificação acontece automaticamente.</p>
-      <div className="code-inputs" id="code-inputs" aria-label="Código de quatro caracteres">
-        {['Primeiro', 'Segundo', 'Terceiro', 'Quarto'].map((label, index) => <input
-          key={label} ref={element => { inputs.current[index] = element; }}
+      <p className="code-instructions">{t('codeInstructions')}</p>
+      <div className="code-inputs" id="code-inputs" aria-label={t('fourCharacterCode')}>
+        {messages.codeCharacters.map((label, index) => <input
+          key={index} ref={element => { inputs.current[index] = element; }}
           className={`code-input${code[index] ? ' filled' : ''}`} type="text" inputMode="text" maxLength={1}
           pattern="[ATCGatcg]" autoCapitalize="characters" autoComplete="off" spellCheck={false}
-          aria-label={`${label} caractere do código`} disabled={!selectedGuess} value={code[index]}
+          aria-label={label} disabled={!selectedGuess} value={code[index]}
           onChange={event => update(index, event.target.value)}
           onKeyDown={event => {
             if (event.key === 'Backspace' && !code[index] && index > 0) {
@@ -70,9 +71,9 @@ export function GuessScreen({ caseId, active, blocked, selectedGuess, code, verd
           }} />)}
       </div>
       <p className={`code-status${!selectedGuess ? ' is-error' : ''}`} id="code-status" role="status" aria-live="polite">{status}</p>
-      <div className="helper-tip">Esqueceu de onde saiu o ATCG?</div>
-      <button className="helper-link" id="open-dna-info-guess" type="button" onClick={onInfo}>Ver explicação rápida do DNA</button>
-      <button className="action-button sr-only" type="submit" tabIndex={-1}>Verificar código</button>
+      <div className="helper-tip">{t('forgotAtcg')}</div>
+      <button className="helper-link" id="open-dna-info-guess" type="button" onClick={onInfo}>{t('quickDna')}</button>
+      <button className="action-button sr-only" type="submit" tabIndex={-1}>{t('verifyCode')}</button>
     </form>
   </article>;
 }
