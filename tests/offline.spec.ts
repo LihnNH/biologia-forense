@@ -1,3 +1,4 @@
+import { openCase } from './helpers/cases';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
@@ -95,7 +96,7 @@ for (const mount of ['/', '/biologia-forense/']) {
       await page.locator('#close-dna-info').click();
       for (const id of CASE_ORDER) {
         const result = CASE_RESULTS[id];
-        await page.locator(`[data-case="${id}"]`).click();
+        await openCase(page, id);
         await page.locator('#open-pick').click();
         await page.getByRole('button', { name: `Marcar ${result.culprit} como suspeito`, exact: true }).click();
         await page.locator('#open-guess').click();
@@ -179,6 +180,8 @@ test('apagar dados offline limpa o cache, registro e preferências sem recriar d
     await page.evaluate(async () => {
       localStorage.setItem('forensic-dna-force-2d', 'true');
       sessionStorage.setItem('forensic-test', 'saved');
+      localStorage.setItem('visitantes_totais', '25');
+      localStorage.setItem('forensic-fair-statistics', JSON.stringify({ groups: '5', solved: '3', cases: { Faca: '5' } }));
       localStorage.setItem('unrelated-app', 'keep');
       await caches.open('unrelated-cache');
     });

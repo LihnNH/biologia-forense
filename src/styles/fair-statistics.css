@@ -1,0 +1,54 @@
+.visitor-group-title {
+  margin: 16px 0 24px;
+  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  letter-spacing: .06em;
+  line-height: 1.1;
+}
+
+.visitor-stepper {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 64px;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.visitor-count-input {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: calc(12px * var(--corner-radius-scale, 1));
+  background: rgba(0, 0, 0, .35);
+  color: var(--text);
+  font: 400 3.4rem/1.2 "Bebas Neue", Impact, sans-serif;
+  text-align: center;
+  outline: none;
+}
+
+.visitor-count-input:focus { border-color: rgba(255, 83, 91, .65); }
+.visitor-count-input[aria-invalid="true"] { border-color: #ff5360; }
+.visitor-step { padding: 0; font-size: 1.8rem; }
+.visitor-step:disabled, .visitor-group-actions button:disabled { opacity: .45; cursor: default; }
+.visitor-group-error { min-height: 1.5em; margin-top: 10px; color: #ff8a91; font-size: .8rem; line-height: 1.5; }
+.visitor-group-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
+
+body:has(#visitor-group-modal.is-active) .page { filter: blur(7px); }
+#visitor-group-modal { backdrop-filter: none; }
+#visitor-group-modal .modal-panel { outline: none; }
+
+.fair-statistics { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+.fair-statistics-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.fair-statistics h3 { font-size: .95rem; font-weight: 600; }
+.fair-statistics h4 { font-size: .85rem; font-weight: 600; }
+.fair-statistics-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 22px; }
+.fair-statistics-columns > section { min-width: 0; padding-right: 20px; }
+.fair-statistics-columns > section + section { border-left: 1px solid var(--line); padding-right: 0; padding-left: 20px; }
+.fair-statistics-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 20px; }
+.fair-statistics-totals dt { color: var(--muted); font-size: .8rem; line-height: 1.5; }
+.fair-statistics-totals dd { margin-top: 6px; font: 400 clamp(2.6rem, 4vw, 4rem)/1 "Bebas Neue", Impact, sans-serif; overflow-wrap: anywhere; }
+.fair-statistics-cases { display: grid; gap: 14px; margin-top: 16px; list-style: none; }
+.fair-statistics-case-heading { display: flex; justify-content: space-between; gap: 16px; color: rgba(238,238,238,.8); font-size: .8rem; line-height: 1.5; }
+.fair-statistics-case-heading span:first-child { min-width: 0; }
+.fair-statistics-case-heading span:last-child { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.fair-statistics-bar { height: 7px; overflow: hidden; margin-top: 6px; border-radius: 999px; background: rgba(255,255,255,.1); }
+.fair-statistics-bar span { display: block; height: 100%; border-radius: inherit; background: #b51d25; transition: width .25s ease; }

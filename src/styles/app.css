@@ -1,6 +1,7 @@
 @import './images.css';
 @import './scrollbars.css';
 @import './corners.css';
+@import './fair-statistics.css';
 
 :root {
   --bg: #050607;
@@ -1272,6 +1273,8 @@ body:has(#guess-error-modal.is-active) .page {
   line-height: 1.6;
 }
 
+.suspect-text blockquote { font-style: italic; }
+
 .footer-mark {
   margin-top: clamp(30px, 5vh, 48px);
   display: flex;
@@ -1335,6 +1338,21 @@ body:has(#guess-error-modal.is-active) .page {
     0 18px 28px rgba(0,0,0,.42),
     0 0 16px rgba(181,29,37,.12),
     inset 0 -1px 0 rgba(255,82,96,.46);
+}
+
+#open-dna-info-home {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.helper-dna-icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
 }
 
 .helper-tip {

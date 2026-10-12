@@ -1,10 +1,11 @@
+import { openCase } from './helpers/cases';
 import { expect, test } from '@playwright/test';
 
 test('o final respeita as pausas e revela o título antes da foto e da solução', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await page.locator('#open-pick').click();
   await page.getByRole('button', { name: 'Marcar Rafael Oliveira como suspeito', exact: true }).click();
   await page.locator('#open-guess').click();
@@ -63,7 +64,7 @@ test('o final respeita as pausas e revela o título antes da foto e da solução
   await expect(page.locator('body')).not.toHaveClass(/finale-/);
 
   // A second investigation must replay the ending from its first frame.
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await page.locator('#open-pick').click();
   await page.getByRole('button', { name: 'Marcar Rafael Oliveira como suspeito', exact: true }).click();
   await page.locator('#open-guess').click();

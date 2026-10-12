@@ -25,7 +25,10 @@ export function Home({ onCase, onInfo }: { onCase: (id: CaseId) => void; onInfo:
         <span className="sr-only">{t('openCase', { case: caseLabels[id] })}</span>
       </article>)}
     </section>
-    <div className="home-tools"><button className="helper-link" type="button" id="open-dna-info-home" onClick={onInfo}>{t('dnaHelp')}</button></div>
+    <div className="home-tools"><button className="helper-link" type="button" id="open-dna-info-home" onClick={onInfo}>
+      <img className="helper-dna-icon" draggable={false} src={artwork.dna} alt="" aria-hidden="true" />
+      <span>{t('dnaHelp')}</span>
+    </button></div>
     <div className="footer-mark" aria-hidden="true"><img draggable={false} className="footer-fingerprint" src={artwork.fingerprint} alt="" loading="eager" /></div>
   </>;
 }

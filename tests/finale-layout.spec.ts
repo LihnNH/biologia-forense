@@ -1,3 +1,4 @@
+import { openCase } from './helpers/cases';
 import { expect, test } from '@playwright/test';
 import { CASES, CASE_ORDER, CASE_RESULTS } from '../src/data/cases';
 
@@ -14,7 +15,7 @@ for (const id of CASE_ORDER) {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.setViewportSize(screens[0]);
     await page.goto('/');
-    await page.locator(`[data-case="${id}"]`).click();
+    await openCase(page, id);
     await page.locator('#open-pick').click();
     const wrongSuspect = CASES[id].suspects.find(suspect => suspect.name !== CASE_RESULTS[id].culprit)!;
     await page.getByRole('button', { name: `Marcar ${wrongSuspect.name} como suspeito`, exact: true }).click();
@@ -48,7 +49,7 @@ test('a solução em inglês cabe no notebook sem o aviso de palpite', async ({ 
   await page.addInitScript(() => localStorage.setItem('forensic-language', 'en'));
   await page.setViewportSize({ width: 1280, height: 600 });
   await page.goto('/');
-  await page.locator('[data-case="Veneno"]').click();
+  await openCase(page, 'Veneno');
   await page.locator('#open-pick').click();
   await page.getByRole('button', { name: 'Select Gustavo Almeida as your suspect', exact: true }).click();
   await page.locator('#open-guess').click();

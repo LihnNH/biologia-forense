@@ -4,10 +4,12 @@ import { defaultSmokeSettings, smokeRanges, type SmokeSettings } from '../lib/sm
 import { Modal } from './Modal';
 import { OfflineStatus } from './OfflineStatus';
 import { clearOfflineData, useOffline } from '../lib/offline';
+import { FairStatistics } from './FairStatistics';
 
 const sliderLabels = { fps: 'smokeFps', quality: 'smokeQuality', strength: 'smokeStrength', speed: 'smokeSpeed' } as const;
 
-export function SettingsModal({ smokeSettings, onSmokeChange, closing, onExited, onClose }: {
+export function SettingsModal({ statisticsSaveError, smokeSettings, onSmokeChange, closing, onExited, onClose }: {
+  statisticsSaveError: boolean;
   smokeSettings: SmokeSettings;
   onSmokeChange: (settings: SmokeSettings) => void;
   closing: boolean;
@@ -80,5 +82,6 @@ export function SettingsModal({ smokeSettings, onSmokeChange, closing, onExited,
       </a>
     </div>
     <OfflineStatus language={language} />
+    <FairStatistics saveError={statisticsSaveError} />
   </Modal>;
 }

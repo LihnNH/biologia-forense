@@ -1,3 +1,4 @@
+import { openCase } from './helpers/cases';
 import { expect, test, type Page } from '@playwright/test';
 import { CASES, CASE_ORDER, CASE_RESULTS } from '../src/data/cases';
 import { caseLabelsEn, caseResultsEn, casesEn, hotspotDetailsEn } from '../src/i18n/content.en';
@@ -35,7 +36,7 @@ test('o seletor desliza, traduz, mantém o foco e salva a linguagem', async ({ p
   expect((await thumb.boundingBox())!.x).toBeGreaterThan(left!.x + 100);
   await page.screenshot({ path: testInfo.outputPath('settings-english.png') });
   await page.keyboard.press('Shift+Tab');
-  await expect(page.locator('.settings-debug-link')).toBeFocused();
+  await expect(page.locator('#export-fair-statistics')).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(toggle).toBeFocused();
   await page.keyboard.press('Space');
@@ -54,7 +55,7 @@ test('o seletor desliza, traduz, mantém o foco e salva a linguagem', async ({ p
 
 test('trocar a linguagem preserva o suspeito, o código e o depoimento aberto', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await page.getByRole('button', { name: 'Ver informações de Rafael Oliveira', exact: true }).click();
   await expect(page.locator('.portrait-modal')).toHaveAttribute('data-phase', 'open');
   await openSettings(page);
@@ -91,7 +92,7 @@ for (const id of CASE_ORDER) {
   test(`resolve ${id} em inglês sem alterar a resposta`, async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('forensic-language', 'en'));
     await page.goto('/');
-    await page.locator(`[data-case="${id}"]`).click();
+    await openCase(page, id);
     await expect(page.locator('#case-title')).toHaveText(caseLabelsEn[id]);
     await page.locator('#open-pick').click();
     await page.getByRole('button', { name: `Select ${CASE_RESULTS[id].culprit} as your suspect`, exact: true }).click();
@@ -109,7 +110,7 @@ for (const id of CASE_ORDER) {
 test('avisa em inglês quando o código está correto mas o suspeito está errado', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('forensic-language', 'en'));
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await page.locator('#open-pick').click();
   await page.getByRole('button', { name: 'Select Diego Martins as your suspect', exact: true }).click();
   await page.locator('#open-guess').click();
@@ -138,7 +139,7 @@ test('traduz o erro e o DNA, incluindo o ponto selecionado e a licença', async 
   await expect(page.locator('#dna-license-card')).toHaveClass(/is-open/);
   await expect(page.locator('.dna-license-title')).toHaveText('Licença');
   await page.locator('#close-dna-info').click();
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await page.locator('#open-pick').click();
   await page.getByRole('button', { name: 'Marcar Rafael Oliveira como suspeito', exact: true }).click();
   await page.locator('#open-guess').click();

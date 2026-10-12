@@ -109,6 +109,34 @@ relativas à imagem. As teclas `1` a `6` ou um clique no ponto mostram os mesmos
 títulos, descrições e painéis animados do 3D. Pressionar a mesma tecla novamente
 fecha a explicação. Os pontos e suas linhas continuam alinhados ao redimensionar.
 
+## Estatísticas da feira
+
+Ao escolher um caso na tela inicial, informe o tamanho do grupo e confirme em
+**Iniciar caso**. O campo aceita números inteiros pelo teclado, botões `−`/`+`
+ou setas para cima/baixo, sem limite numérico. Usar `0` permite testar o caso
+sem somar visitantes, grupos, escolhas de caso ou soluções. Cancelar também
+não altera os totais; voltar dos códigos aos suspeitos não registra outro grupo.
+
+No fim das configurações (`C`), **Estatísticas da feira** mostra visitantes,
+grupos atendidos, casos solucionados e a distribuição dos casos escolhidos.
+As barras ficam divididas entre escolhas e soluções por caso, separadas por
+uma linha central. Dados anteriores sem soluções por caso mantêm o total
+geral; a distribuição das soluções começa em zero, sem estimativas.
+Cada grupo registrado pode somar uma solução ao concluir o caso, inclusive se
+o código estiver correto e o palpite errado. Erros de código não somam soluções.
+
+**Exportar JSON** baixa os totais, escolhas e soluções por caso, com a data da exportação.
+Os contadores no arquivo são strings decimais para preservar números grandes
+sem perder precisão. Exportar não modifica os dados armazenados.
+A seção `grupos`, apenas no JSON, lista o número e a quantidade de visitantes
+de cada grupo registrado. Rodadas com `0` ficam fora da lista. O histórico
+começa com os novos registros; tamanhos de grupos antigos não são estimados.
+
+Os totais ficam neste navegador: `visitantes_totais` guarda a soma de visitantes
+e `forensic-fair-statistics` guarda os outros contadores. Funcionam offline e
+permanecem após recarregar; abas da mesma origem compartilham a contagem.
+**Apagar dados offline** também remove todas essas estatísticas.
+
 ## Páginas de apoio
 
 - `/debug/`: menu com acesso às posições do DNA e às respostas dos casos.

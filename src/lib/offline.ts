@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { clearFairStatistics, FAIR_STATISTICS_KEY, VISITOR_TOTAL_KEY } from './fairStatistics';
 
 type OfflinePhase = 'preparing' | 'ready' | 'error' | 'unsupported' | 'clearing' | 'cleared' | 'clearError';
 interface OfflineState { phase: OfflinePhase; online: boolean }
@@ -125,8 +126,12 @@ export function clearOfflineData(): Promise<void> {
       for (const name of await caches.keys()) if (name.startsWith(prefix)) await caches.delete(name);
     }
     for (const storage of [localStorage, sessionStorage]) {
-      for (const key of Object.keys(storage)) if (key.startsWith('forensic-')) storage.removeItem(key);
+      for (const key of Object.keys(storage)) {
+        if (storage === localStorage && (key === FAIR_STATISTICS_KEY || key === VISITOR_TOTAL_KEY)) continue;
+        if (key.startsWith('forensic-') || key === VISITOR_TOTAL_KEY) storage.removeItem(key);
+      }
     }
+    await clearFairStatistics();
     publish('cleared');
     channel?.postMessage('cleared');
   })().catch(error => { publish('clearError'); channel?.postMessage('clearError'); throw error; }).finally(() => { clearing = null; });

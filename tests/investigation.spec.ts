@@ -1,3 +1,4 @@
+import { openCase, confirmTestGroup } from './helpers/cases';
 import { expect, test, type Page } from '@playwright/test';
 import { CASES, CASE_LABELS, CASE_ORDER, CASE_RESULTS } from '../src/data/cases';
 
@@ -17,7 +18,7 @@ async function enterCode(page: Page, code: string) {
 
 test('as setas selecionam a letra anterior ou seguinte e permitem corrigir o código pelo teclado', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await chooseSuspect(page, CASE_RESULTS.Faca.culprit);
   await page.locator('#open-guess').click();
   const fields = page.locator('.code-input');
@@ -108,7 +109,7 @@ test('uma foto com falha permite tentar novamente sem bloquear a aplicação', a
   failPortrait = false;
   await page.getByRole('button', { name: 'Tentar novamente' }).click();
   await expect(page.locator('.startup-screen')).toHaveCount(0);
-  await page.locator('[data-case="Martelo"]').click();
+  await openCase(page, 'Martelo');
   await expect.poll(() => page.getByRole('img', { name: 'Foto de Laura Almeida', exact: true }).evaluate(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0)).toBe(true);
 });
 
@@ -124,6 +125,7 @@ test('a página inicial mantém os cards, recursos e fundo sem erros de runtime'
   await page.screenshot({ path: testInfo.outputPath('home.png'), fullPage: true });
   await page.locator('[data-case="Faca"]').focus();
   await page.keyboard.press('Enter');
+  await confirmTestGroup(page);
   await expect(page.locator('#case-title')).toHaveText('Lâmina Sombria');
   await expect(page.getByRole('list', { name: 'Suspeitos — Lâmina Sombria' })).toBeVisible();
   await expect(page.locator('#case-description')).toHaveCount(0);
@@ -137,7 +139,7 @@ for (const id of CASE_ORDER) {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(page.locator('.suspect-gallery')).toHaveCount(0);
-    await page.locator(`[data-case="${id}"]`).click();
+    await openCase(page, id);
     const gallery = page.getByRole('list', { name: `Suspeitos — ${CASE_LABELS[id]}` });
     const portraits = gallery.getByRole('img');
     await expect(portraits).toHaveCount(CASES[id].suspects.length);
@@ -183,7 +185,7 @@ for (const id of CASE_ORDER) {
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto('/');
-    await page.locator(`[data-case="${id}"]`).click();
+    await openCase(page, id);
     await expect(page.locator('#open-guess')).toBeDisabled();
     await chooseSuspect(page, CASE_RESULTS[id].culprit);
     await page.locator('#open-guess').click();
@@ -213,7 +215,7 @@ for (const id of CASE_ORDER) {
     await page.screenshot({ path: testInfo.outputPath('solution-desktop.png'), fullPage: true });
     await page.locator('#done-home').click();
     await expect.poll(() => readFinaleSmokeTint(page)).toBe(0);
-    await page.locator(`[data-case="${id}"]`).click();
+    await openCase(page, id);
     await expect(page.locator('#open-guess')).toBeDisabled();
     await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(0);
     expect(errors).toEqual([]);
@@ -223,7 +225,7 @@ for (const id of CASE_ORDER) {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto('/');
-    await page.locator(`[data-case="${id}"]`).click();
+    await openCase(page, id);
     const wrongSuspect = CASES[id].suspects.find(suspect => suspect.name !== CASE_RESULTS[id].culprit)!;
     await chooseSuspect(page, wrongSuspect.name);
     await page.locator('#open-guess').click();
@@ -244,7 +246,7 @@ for (const id of CASE_ORDER) {
     if (id === 'Faca') {
       // The warning must not leak into a later investigation with the right suspect.
       await page.locator('#done-home').click();
-      await page.locator('[data-case="Faca"]').click();
+      await openCase(page, 'Faca');
       await chooseSuspect(page, CASE_RESULTS.Faca.culprit);
       await page.locator('#open-guess').click();
       await enterCode(page, CASE_RESULTS.Faca.code);
@@ -257,7 +259,7 @@ for (const id of CASE_ORDER) {
 for (const failure of ['code', 'both'] as const) {
   test(`bloqueia a solução com código errado quando o erro está em ${failure}`, async ({ page }) => {
     await page.goto('/');
-    await page.locator('[data-case="Faca"]').click();
+    await openCase(page, 'Faca');
     const suspect = failure === 'code' ? CASE_RESULTS.Faca.culprit : CASES.Faca.suspects.find(s => s.name !== CASE_RESULTS.Faca.culprit)!.name;
     await chooseSuspect(page, suspect);
     await page.locator('#open-guess').click();
@@ -297,14 +299,14 @@ for (const failure of ['code', 'both'] as const) {
 
 test('mantém palpites por caso e cancela a confirmação ao navegar', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await chooseSuspect(page, CASE_RESULTS.Faca.culprit);
   await page.locator('#case-view').getByRole('button', { name: 'Voltar', exact: true }).click();
-  await page.locator('[data-case="Corda"]').click();
+  await openCase(page, 'Corda');
   await expect(page.locator('#open-guess')).toBeDisabled();
   await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(0);
   await page.locator('#case-view').getByRole('button', { name: 'Voltar', exact: true }).click();
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await page.locator('#open-guess').click();
   await expect(page.locator('#guess-selected-name')).toHaveText(CASE_RESULTS.Faca.culprit);
   await page.clock.install();
@@ -317,7 +319,7 @@ test('mantém palpites por caso e cancela a confirmação ao navegar', async ({ 
 
 test('colar, apagar e filtrar o código funciona com inputs controlados', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-case="Veneno"]').click();
+  await openCase(page, 'Veneno');
   await chooseSuspect(page, CASE_RESULTS.Veneno.culprit);
   await page.locator('#open-guess').click();
   const fields = page.locator('.code-input');
@@ -342,7 +344,7 @@ test('colar, apagar e filtrar o código funciona com inputs controlados', async 
 
 test('seleção pelas fotos funciona com teclado e Escape cancela o modo Palpite', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-case="Martelo"]').click();
+  await openCase(page, 'Martelo');
   await page.locator('#open-pick').focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('.suspect-gallery')).toHaveClass(/is-picking/);
@@ -365,10 +367,10 @@ test('seleção pelas fotos funciona com teclado e Escape cancela o modo Palpite
 
 test('clicar no suspeito já marcado no modo Palpite remove a marcação apenas daquele caso', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-case="Corda"]').click();
+  await openCase(page, 'Corda');
   await chooseSuspect(page, CASE_RESULTS.Corda.culprit);
   await page.locator('#case-view').getByRole('button', { name: 'Voltar', exact: true }).click();
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await chooseSuspect(page, 'Rafael Oliveira');
   await page.locator('#open-pick').click();
   const marked = page.getByRole('button', { name: 'Desmarcar Rafael Oliveira como suspeito', exact: true });
@@ -381,14 +383,14 @@ test('clicar no suspeito já marcado no modo Palpite remove a marcação apenas 
   await chooseSuspect(page, 'Rafael Oliveira');
   await chooseSuspect(page, 'Mariana Costa');
   await page.locator('#case-view').getByRole('button', { name: 'Voltar', exact: true }).click();
-  await page.locator('[data-case="Corda"]').click();
+  await openCase(page, 'Corda');
   await expect(page.locator('.suspect-portrait.is-guess').getByRole('img')).toHaveAttribute('alt', `Foto de ${CASE_RESULTS.Corda.culprit}`);
   await expect(page.locator('#open-guess')).toBeEnabled();
 });
 
 test('Depoimentos cancela a escolha, restaura o botão Palpite e preserva o suspeito marcado', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   const pick = page.locator('#open-pick');
   await expect(pick).toHaveText('Palpite');
   await pick.click();
@@ -416,7 +418,7 @@ test('Depoimentos cancela a escolha, restaura o botão Palpite e preserva o susp
 test('fechar o depoimento com o mouse não mantém o realce branco do retrato', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   const first = page.locator('.suspect-portrait').first();
   await first.getByRole('button').click();
   await expect(page.getByRole('dialog')).toHaveAttribute('data-phase', 'open');
@@ -529,7 +531,7 @@ test('layout mobile continua acessível sem rolagem horizontal', async ({ page }
   await expect(page.locator('[data-case="Corda"]')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.screenshot({ path: testInfo.outputPath('home-mobile.png'), fullPage: true });
-  await page.locator('[data-case="Corda"]').click();
+  await openCase(page, 'Corda');
   await page.getByRole('button', { name: `Ver informações de ${CASE_RESULTS.Corda.culprit}`, exact: true }).click();
   await expect(page.getByRole('dialog')).toHaveAttribute('data-phase', 'open');
   await expect(page.locator('.portrait-panel')).toBeVisible();
@@ -543,7 +545,7 @@ test('Palpite mantém o tremor e marca a seleção com a borda animada original'
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   await expect(page.locator('#open-guess')).toBeDisabled();
   expect(await page.locator('#open-guess').evaluate(element => Number(getComputedStyle(element).opacity))).toBeLessThan(.5);
   const start = await page.locator('#open-pick').evaluate(element => {
@@ -604,7 +606,7 @@ test('a foto desaparece rapidamente e o painel cresce direto até o tamanho fina
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  await page.locator('[data-case="Faca"]').click();
+  await openCase(page, 'Faca');
   const source = page.getByRole('button', { name: 'Ver informações de Rafael Oliveira', exact: true });
   const measurements = await source.evaluate(async element => {
     const original = element.querySelector('img')!.getBoundingClientRect();
@@ -655,7 +657,7 @@ test('Escape durante a expansão restaura o retrato e permite abrir outro suspei
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
-  await page.locator('[data-case="Veneno"]').click();
+  await openCase(page, 'Veneno');
   const sources = page.locator('.portrait-button');
   await sources.first().evaluate(element => {
     (element as HTMLButtonElement).click();

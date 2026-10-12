@@ -15,15 +15,25 @@ import { StartupLoading } from './components/StartupLoading';
 import { assetCount, preloadAssets, type AssetProgress } from './lib/preloadAssets';
 import { useInvestigation, type View } from './lib/useInvestigation';
 import { useSmokeSettings } from './lib/smokeSettings';
+import type { CaseId } from './data/cases';
+import { VisitorGroupModal } from './components/VisitorGroupModal';
+import { onFairStatisticsReset, registerGroup, registerSolvedCase } from './lib/fairStatistics';
 
 export default function App() {
   const { cases } = useI18n();
   const { settings: smokeSettings, setSettings: setSmokeSettings } = useSmokeSettings();
+  const [pendingCase, setPendingCase] = useState<CaseId | null>(null);
+  const activeGroup = useRef<{ counted: boolean; solutionRecorded: boolean } | null>(null);
+  const [statisticsSaveError, setStatisticsSaveError] = useState(false);
+  useEffect(() => onFairStatisticsReset(() => {
+    activeGroup.current = null;
+    setStatisticsSaveError(false);
+  }), []);
   const [settingsModalPhase, setSettingsModalPhase] = useState<'closed' | 'open' | 'closing'>('closed');
   const settingsModalOpen = settingsModalPhase !== 'closed';
   const closeSettingsModal = useCallback(() => setSettingsModalPhase(phase => phase === 'closed' ? phase : 'closing'), []);
   const handleGlobalKey = useEffectEvent((event: KeyboardEvent) => {
-    if (finaleTransitioning) return;
+    if (finaleTransitioning || pendingCase) return;
     if (settingsModalOpen) {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeSettingsModal(); return; }
       if (event.key.toLowerCase() !== 'c') return;
@@ -57,6 +67,15 @@ export default function App() {
   const { state, dispatch, selectedGuess, verdict } = useInvestigation();
   const finaleTransitioning = state.finalePhase !== 'idle' && state.finalePhase !== 'complete';
   useEffect(() => {
+    const group = activeGroup.current;
+    if (state.view !== 'done' || state.finalePhase !== 'complete' || !group?.counted || group.solutionRecorded) return;
+    group.solutionRecorded = true;
+    void registerSolvedCase(state.caseId).then(() => setStatisticsSaveError(false)).catch(() => {
+      group.solutionRecorded = false;
+      setStatisticsSaveError(true);
+    });
+  }, [state.view, state.finalePhase, state.caseId, settingsModalOpen]);
+  useEffect(() => {
     if (finaleTransitioning) setSettingsModalPhase('closed');
   }, [finaleTransitioning]);
   const [portrait, setPortrait] = useState<PortraitOrigin | null>(null);
@@ -81,8 +100,8 @@ export default function App() {
   });
   return <>
     <Background active={!loading} smokeSettings={smokeSettings} smokeTint={state.view === 'done' ? finaleColors[state.caseId] : null} />
-    <main className={`page${loading ? ' is-loading' : ''}${state.view === 'done' ? ' is-finale' : ''}`} inert={loading || finaleTransitioning || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen} aria-hidden={loading}>
-      <section {...screenProps('home')}><Home onCase={id => dispatch({ type: 'case', id })} onInfo={() => dispatch({ type: 'info' })} /></section>
+    <main className={`page${loading ? ' is-loading' : ''}${state.view === 'done' ? ' is-finale' : ''}`} inert={loading || finaleTransitioning || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen || Boolean(pendingCase)} aria-hidden={loading}>
+      <section {...screenProps('home')}><Home onCase={setPendingCase} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('case')}>{state.view === 'case' && <CaseScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} activePortrait={portrait?.index ?? null} selectedGuess={selectedGuess} onPick={index => dispatch({ type: 'pick', index })} onCode={() => dispatch({ type: 'navigate', view: 'guess' })} onPortrait={(index, source) => {
         portraitOpener.current = source;
         setPortrait({ index, source, rect: source.querySelector('img')!.getBoundingClientRect() });
@@ -97,6 +116,13 @@ export default function App() {
       onContinue={() => setContinueWithoutAssets(true)} />}
     <InvestigationModals modal={state.modal} onClose={() => dispatch({ type: 'closeModal' })} />
     {portrait && <PortraitModal origin={portrait} suspect={cases[state.caseId].suspects[portrait.index]} image={suspectPortraits[state.caseId][cases[state.caseId].suspects[portrait.index].name]} onClose={closePortrait} />}
-    {settingsModalOpen && <SettingsModal smokeSettings={smokeSettings} onSmokeChange={setSmokeSettings} closing={settingsModalPhase === 'closing'} onExited={() => setSettingsModalPhase(phase => phase === 'closing' ? 'closed' : phase)} onClose={closeSettingsModal} />}
+    {pendingCase && <VisitorGroupModal caseId={pendingCase} onClose={() => setPendingCase(null)} onConfirm={async visitors => {
+      await registerGroup(pendingCase, visitors);
+      activeGroup.current = { counted: visitors !== 0n, solutionRecorded: false };
+      setStatisticsSaveError(false);
+      dispatch({ type: 'case', id: pendingCase });
+      setPendingCase(null);
+    }} />}
+    {settingsModalOpen && <SettingsModal statisticsSaveError={statisticsSaveError} smokeSettings={smokeSettings} onSmokeChange={setSmokeSettings} closing={settingsModalPhase === 'closing'} onExited={() => setSettingsModalPhase(phase => phase === 'closing' ? 'closed' : phase)} onClose={closeSettingsModal} />}
   </>;
 }
