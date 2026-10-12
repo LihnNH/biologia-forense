@@ -21,7 +21,7 @@ import { onFairStatisticsReset, registerGroup, registerSolvedCase } from './lib/
 import { PageHelpModal, type HelpPage } from './components/PageHelpModal';
 
 export default function App() {
-  const { cases } = useI18n();
+  const { cases, t } = useI18n();
   const { settings: smokeSettings, setSettings: setSmokeSettings } = useSmokeSettings();
   const [pendingCase, setPendingCase] = useState<CaseId | null>(null);
   const [helpPage, setHelpPage] = useState<HelpPage | null>(null);
@@ -47,12 +47,12 @@ export default function App() {
       return;
     }
     if (key === 'h' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.isComposing) {
-      if (loading || settingsModalOpen || state.modal || portrait || (state.view !== 'home' && state.view !== 'case' && state.view !== 'guess')) return;
+      if (!currentHelpPage || helpBlocked) return;
       const target = event.target;
       if (target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable) && !target.matches('.code-input')) return;
       event.preventDefault();
       event.stopPropagation();
-      if (!event.repeat && !verdict) setHelpPage(state.view);
+      if (!event.repeat && !verdict) setHelpPage(currentHelpPage);
       return;
     }
     if (settingsModalOpen) {
@@ -103,6 +103,8 @@ export default function App() {
     if (finaleTransitioning) setSettingsModalPhase('closed');
   }, [finaleTransitioning]);
   const [portrait, setPortrait] = useState<PortraitOrigin | null>(null);
+  const currentHelpPage = state.view === 'home' || state.view === 'case' || state.view === 'guess' ? state.view : null;
+  const helpBlocked = loading || settingsModalOpen || Boolean(state.modal) || Boolean(portrait) || Boolean(pendingCase) || finaleTransitioning;
   const closePortrait = useCallback(() => setPortrait(null), []);
   const portraitOpener = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
@@ -133,6 +135,7 @@ export default function App() {
       <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={finaleTransitioning || Boolean(state.modal) || settingsModalOpen || Boolean(helpPage)} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('info')}><DnaViewer active={!loading && state.view === 'info'} onPrepared={onDnaPrepared} onBack={() => dispatch({ type: 'closeInfo' })} /></section>
       <section {...screenProps('done')}>{state.view === 'done' && <ResultScreen caseId={state.caseId} phase={state.finalePhase} incorrectSuspect={state.incorrectSuspect} onHome={() => dispatch({ type: 'navigate', view: 'home' })} />}</section>
+      {currentHelpPage && !helpBlocked && !verdict && <button className="page-help-button" id="open-page-help" type="button" aria-label={t('help')} aria-haspopup="dialog" aria-keyshortcuts="H" title={`${t('help')} (H)`} onClick={() => setHelpPage(currentHelpPage)}>?</button>}
     </main>
     {(state.finalePhase === 'fade' || state.finalePhase === 'black') && <div className={`finale-blackout is-${state.finalePhase}`} data-phase={state.finalePhase} aria-hidden="true" />}
     {loading && <StartupLoading completed={assets.completed + Number(dnaPrepared)} total={assets.total + 1} failed={assets.failed} waitingForDna={!dnaPrepared}

@@ -28,6 +28,8 @@ a aplicação utiliza a representação 2D.
 A aplicação está disponível em `/` e em `/trabalho.html`, para manter o endereço antigo.
 
 Pressione `H` para abrir a ajuda da tela inicial, dos suspeitos ou do código.
+O botão redondo **?**, no canto inferior direito dessas telas, abre a mesma ajuda.
+Somente a ajuda inicial inclui a lista de atalhos, com teclas no estilo do gabarito.
 Ela orienta o uso do panfleto da feira, a escolha do suspeito e a leitura do código
 com a lanterna UV e o cartaz. `H`, `Escape` ou **Entendi** fecham a ajuda.
 O atalho também funciona nos campos do código, preservando as letras digitadas.

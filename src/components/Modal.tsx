@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef, type ReactNode } from 'react';
 
-export function Modal({ id, labelledBy, ariaLabel, describedBy, alert = false, closing = false, isolateKeyboard = false, onExited, onClose, children }: {
+export function Modal({ id, labelledBy, ariaLabel, describedBy, alert = false, closing = false, isolateKeyboard = false, focusPanel = false, onExited, onClose, children }: {
   id: string;
   labelledBy?: string;
   ariaLabel?: string;
@@ -8,6 +8,7 @@ export function Modal({ id, labelledBy, ariaLabel, describedBy, alert = false, c
   alert?: boolean;
   closing?: boolean;
   isolateKeyboard?: boolean;
+  focusPanel?: boolean;
   onExited?: () => void;
   onClose: () => void;
   children: ReactNode;
@@ -19,7 +20,7 @@ export function Modal({ id, labelledBy, ariaLabel, describedBy, alert = false, c
     const container = panel.current;
     if (!container) return;
     const focusable = () => [...container.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), [tabindex="0"]')];
-    (focusable()[0] ?? container).focus();
+    (focusPanel ? container : focusable()[0] ?? container).focus({ preventScroll: true });
     const onKey = (event: KeyboardEvent) => {
       if (isolateKeyboard) event.stopPropagation();
       if (event.key === 'Escape') { event.preventDefault(); close(); }
@@ -40,7 +41,7 @@ export function Modal({ id, labelledBy, ariaLabel, describedBy, alert = false, c
       keyboardTarget.removeEventListener('keydown', onKey as EventListener);
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
     };
-  }, [id, isolateKeyboard]);
+  }, [id, isolateKeyboard, focusPanel]);
 
   return <div className={`modal is-active${closing ? ' is-closing' : ''}`} id={id} role={alert ? 'alertdialog' : 'dialog'} aria-modal="true" aria-labelledby={labelledBy} aria-label={ariaLabel} aria-describedby={describedBy}
     onAnimationEnd={event => { if (closing && event.target === event.currentTarget) onExited?.(); }}>
