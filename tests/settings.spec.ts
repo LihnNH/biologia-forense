@@ -36,7 +36,7 @@ test('o seletor desliza, traduz, mantém o foco e salva a linguagem', async ({ p
   expect((await thumb.boundingBox())!.x).toBeGreaterThan(left!.x + 100);
   await page.screenshot({ path: testInfo.outputPath('settings-english.png') });
   await page.keyboard.press('Shift+Tab');
-  await expect(page.locator('#export-fair-statistics')).toBeFocused();
+  await expect(page.locator('.settings-credit a')).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(toggle).toBeFocused();
   await page.keyboard.press('Space');

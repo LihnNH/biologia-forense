@@ -879,6 +879,13 @@ body:has(#guess-error-modal.is-active) .page {
   backdrop-filter: none;
 }
 
+body:has(#page-help-modal.is-active) .page { filter: blur(7px); }
+#page-help-modal { backdrop-filter: none; }
+#page-help-modal .modal-panel { outline: none; }
+.page-help-steps { display: grid; gap: 14px; margin: 22px 0 26px; padding-left: 1.4em; color: rgba(238,238,238,.76); font-size: .95rem; line-height: 1.65; }
+.page-help-steps li::marker { color: #ff5360; font-weight: 600; }
+.page-help-step p { margin: 0; }
+
 #settings-modal {
   z-index: 210;
 }
@@ -902,6 +909,25 @@ body:has(#guess-error-modal.is-active) .page {
   font-size: clamp(2.2rem, 6vw, 3.2rem);
   letter-spacing: .07em;
 }
+
+.settings-credit {
+  margin-top: 26px;
+  color: rgba(238, 238, 238, .46);
+  font-size: .8rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.settings-credit a {
+  color: inherit;
+  text-underline-offset: 3px;
+  transition: color .2s ease;
+}
+
+.settings-credit-heart { width: 1em; height: 1em; vertical-align: -.12em; }
+
+.settings-credit a:hover,
+.settings-credit a:focus-visible { color: var(--text); }
 
 .settings-row {
   display: grid;

@@ -27,6 +27,12 @@ a aplicação utiliza a representação 2D.
 
 A aplicação está disponível em `/` e em `/trabalho.html`, para manter o endereço antigo.
 
+Pressione `H` para abrir a ajuda da tela inicial, dos suspeitos ou do código.
+Ela orienta o uso do panfleto da feira, a escolha do suspeito e a leitura do código
+com a lanterna UV e o cartaz. `H`, `Escape` ou **Entendi** fecham a ajuda.
+O atalho também funciona nos campos do código, preservando as letras digitadas.
+Não há ajuda nas configurações, no DNA, no debug ou na solução do caso.
+
 ## Uso offline na feira
 
 Na versão publicada, um service worker salva automaticamente o build completo

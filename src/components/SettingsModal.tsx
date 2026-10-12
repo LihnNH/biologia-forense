@@ -83,5 +83,10 @@ export function SettingsModal({ statisticsSaveError, smokeSettings, onSmokeChang
     </div>
     <OfflineStatus language={language} />
     <FairStatistics saveError={statisticsSaveError} />
+    <p className="settings-credit">
+      {t('madeWithLove')}{' '}
+      <svg className="settings-credit-heart" viewBox="0 0 24 24" role="img" aria-label={t('love')}><path fill="currentColor" d="M12 21s-9-5.8-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.2-9 12-9 12Z" /></svg>
+      {' '}{t('madeBy')}{' '}<a href="https://github.com/LihnNH" target="_blank" rel="noopener noreferrer">Raul Hass</a>
+    </p>
   </Modal>;
 }

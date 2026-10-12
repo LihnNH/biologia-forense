@@ -18,11 +18,14 @@ import { useSmokeSettings } from './lib/smokeSettings';
 import type { CaseId } from './data/cases';
 import { VisitorGroupModal } from './components/VisitorGroupModal';
 import { onFairStatisticsReset, registerGroup, registerSolvedCase } from './lib/fairStatistics';
+import { PageHelpModal, type HelpPage } from './components/PageHelpModal';
 
 export default function App() {
   const { cases } = useI18n();
   const { settings: smokeSettings, setSettings: setSmokeSettings } = useSmokeSettings();
   const [pendingCase, setPendingCase] = useState<CaseId | null>(null);
+  const [helpPage, setHelpPage] = useState<HelpPage | null>(null);
+  const closeHelp = useCallback(() => setHelpPage(null), []);
   const activeGroup = useRef<{ counted: boolean; solutionRecorded: boolean } | null>(null);
   const [statisticsSaveError, setStatisticsSaveError] = useState(false);
   useEffect(() => onFairStatisticsReset(() => {
@@ -34,6 +37,24 @@ export default function App() {
   const closeSettingsModal = useCallback(() => setSettingsModalPhase(phase => phase === 'closed' ? phase : 'closing'), []);
   const handleGlobalKey = useEffectEvent((event: KeyboardEvent) => {
     if (finaleTransitioning || pendingCase) return;
+    const key = event.key.toLowerCase();
+    if (helpPage) {
+      if (event.key === 'Escape' || (key === 'h' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.isComposing)) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!event.repeat) closeHelp();
+      }
+      return;
+    }
+    if (key === 'h' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.isComposing) {
+      if (loading || settingsModalOpen || state.modal || portrait || (state.view !== 'home' && state.view !== 'case' && state.view !== 'guess')) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable) && !target.matches('.code-input')) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (!event.repeat && !verdict) setHelpPage(state.view);
+      return;
+    }
     if (settingsModalOpen) {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeSettingsModal(); return; }
       if (event.key.toLowerCase() !== 'c') return;
@@ -66,6 +87,9 @@ export default function App() {
   }, [loading]);
   const { state, dispatch, selectedGuess, verdict } = useInvestigation();
   const finaleTransitioning = state.finalePhase !== 'idle' && state.finalePhase !== 'complete';
+  useEffect(() => {
+    if (loading || settingsModalOpen || finaleTransitioning || (helpPage && state.view !== helpPage)) closeHelp();
+  }, [loading, settingsModalOpen, finaleTransitioning, state.view, helpPage, closeHelp]);
   useEffect(() => {
     const group = activeGroup.current;
     if (state.view !== 'done' || state.finalePhase !== 'complete' || !group?.counted || group.solutionRecorded) return;
@@ -100,13 +124,13 @@ export default function App() {
   });
   return <>
     <Background active={!loading} smokeSettings={smokeSettings} smokeTint={state.view === 'done' ? finaleColors[state.caseId] : null} />
-    <main className={`page${loading ? ' is-loading' : ''}${state.view === 'done' ? ' is-finale' : ''}`} inert={loading || finaleTransitioning || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen || Boolean(pendingCase)} aria-hidden={loading}>
+    <main className={`page${loading ? ' is-loading' : ''}${state.view === 'done' ? ' is-finale' : ''}`} inert={loading || finaleTransitioning || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen || Boolean(pendingCase) || Boolean(helpPage)} aria-hidden={loading}>
       <section {...screenProps('home')}><Home onCase={setPendingCase} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('case')}>{state.view === 'case' && <CaseScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} activePortrait={portrait?.index ?? null} selectedGuess={selectedGuess} onPick={index => dispatch({ type: 'pick', index })} onCode={() => dispatch({ type: 'navigate', view: 'guess' })} onPortrait={(index, source) => {
         portraitOpener.current = source;
         setPortrait({ index, source, rect: source.querySelector('img')!.getBoundingClientRect() });
       }} />}</section>
-      <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={finaleTransitioning || Boolean(state.modal) || settingsModalOpen} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
+      <section {...screenProps('guess')}><GuessScreen caseId={state.caseId} active={state.view === 'guess'} blocked={finaleTransitioning || Boolean(state.modal) || settingsModalOpen || Boolean(helpPage)} selectedGuess={selectedGuess} code={state.code} verdict={verdict} onCode={code => dispatch({ type: 'code', code })} onBack={() => dispatch({ type: 'navigate', view: 'case' })} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('info')}><DnaViewer active={!loading && state.view === 'info'} onPrepared={onDnaPrepared} onBack={() => dispatch({ type: 'closeInfo' })} /></section>
       <section {...screenProps('done')}>{state.view === 'done' && <ResultScreen caseId={state.caseId} phase={state.finalePhase} incorrectSuspect={state.incorrectSuspect} onHome={() => dispatch({ type: 'navigate', view: 'home' })} />}</section>
     </main>
@@ -115,6 +139,7 @@ export default function App() {
       onRetry={() => { setAssets({ completed: 0, total: assetCount, failed: 0 }); setAttempt(value => value + 1); }}
       onContinue={() => setContinueWithoutAssets(true)} />}
     <InvestigationModals modal={state.modal} onClose={() => dispatch({ type: 'closeModal' })} />
+    {helpPage && <PageHelpModal page={helpPage} onClose={closeHelp} />}
     {portrait && <PortraitModal origin={portrait} suspect={cases[state.caseId].suspects[portrait.index]} image={suspectPortraits[state.caseId][cases[state.caseId].suspects[portrait.index].name]} onClose={closePortrait} />}
     {pendingCase && <VisitorGroupModal caseId={pendingCase} onClose={() => setPendingCase(null)} onConfirm={async visitors => {
       await registerGroup(pendingCase, visitors);

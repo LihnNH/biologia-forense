@@ -2,6 +2,30 @@ export const pt = {
   appTitle: 'Biologia Forense',
   subtitle: 'Verificador de DNA',
   settings: 'Configurações',
+  madeWithLove: 'Feito com',
+  madeBy: 'por',
+  love: 'amor',
+  help: 'Ajuda',
+  gotIt: 'Entendi',
+  helpHomeTitle: 'Escolha seu caso',
+  helpHomeSteps: [
+    'Leia os casos no **panfleto da feira**.',
+    'Escolha o caso de que você mais gostou e clique nele na tela inicial para começar a investigação.'
+  ],
+  helpCaseTitle: 'Investigue os suspeitos',
+  helpCaseSteps: [
+    'Clique na **foto de um suspeito** para ver seu depoimento. Leia os relatos antes de escolher quem você acha que é o culpado.',
+    'Abaixo das fotos ficam os botões **Palpite** e **Código**. Clique em **Palpite** e depois na foto do suspeito para marcá-lo como culpado.',
+    'No modo de seleção, **Palpite** vira **Depoimentos**. Use esse botão para voltar a ler os relatos. Clicar novamente no suspeito já marcado no modo Palpite desfaz a marcação.',
+    'Depois de marcar seu suspeito, clique em **Código** para inserir o resultado da investigação.'
+  ],
+  helpCodeTitle: 'Descubra o código',
+  helpCodeSteps: [
+    'Aponte a **lanterna de luz UV** para o objeto que você acha que é a arma do crime.',
+    'Encontre no objeto o código em formato de **riscos**.',
+    'Use **nosso cartaz** para transcrever os riscos para as letras do código.',
+    'Insira o resultado nos quatro campos do site. A verificação acontece automaticamente.'
+  ],
   offlineData: 'Dados offline',
   clearOfflineData: 'Apagar dados offline',
   clearingOfflineData: 'Apagando dados…',
@@ -104,6 +128,30 @@ export const en: typeof pt = {
   appTitle: 'Forensic Biology',
   subtitle: 'DNA Verifier',
   settings: 'Settings',
+  madeWithLove: 'Made with',
+  madeBy: 'by',
+  love: 'love',
+  help: 'Help',
+  gotIt: 'Got it',
+  helpHomeTitle: 'Choose your case',
+  helpHomeSteps: [
+    'Read the cases in the **science fair leaflet**.',
+    'Choose the case you liked best and click it on the home screen to start investigating.'
+  ],
+  helpCaseTitle: 'Investigate the suspects',
+  helpCaseSteps: [
+    'Click a **suspect’s photo** to read their statement. Read the accounts before choosing who you think is responsible.',
+    'Below the photos are the **Guess** and **Code** buttons. Click **Guess**, then click a suspect’s photo to select them.',
+    'In selection mode, **Guess** becomes **Statements**. Use that button to return to reading the accounts. Clicking the selected suspect again in Guess mode removes your selection.',
+    'After selecting your suspect, click **Code** to enter the result of your investigation.'
+  ],
+  helpCodeTitle: 'Discover the code',
+  helpCodeSteps: [
+    'Shine the **UV flashlight** on the object you think is the murder weapon.',
+    'Find the code written as **marks** on the object.',
+    'Use **our poster** to transcribe the marks into the code’s letters.',
+    'Enter the result in the site’s four fields. Verification happens automatically.'
+  ],
   offlineData: 'Offline data',
   clearOfflineData: 'Delete offline data',
   clearingOfflineData: 'Deleting data…',
