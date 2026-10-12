@@ -44,7 +44,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 27,
         statement: String.raw`**Idade:** 27 anos
 
-> "Levei alguns petiscos para Fernando. Quando voltei para recolher os pratos, ele tinha ido ao banheiro e o copo continuava no balcão, Fernando parecia bem desconfortável com a presença de Gustavo. Juliana estava fechando o caixa, mas, por alguns instantes, não a vi por lá."`
+> "Levei alguns petiscos para Fernando. Quando voltei para recolher os pratos, ele tinha ido ao banheiro e o copo continuava no balcão. Fernando parecia bem desconfortável com a presença de Gustavo. Juliana estava fechando o caixa, mas, por alguns instantes, não a vi por lá."`
       },
       {
         name: 'Marcelo Silva',
@@ -52,7 +52,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 40,
         statement: String.raw`**Idade:** 40 anos
 
-> "Conheço Fernando há alguns anos, e ele sempre vem falando dos conflitos da empresa antiga, principalmente com seu ex sócio, Gustavo. Conversamos por uns dez minutos e depois fui jogar sinuca com meus amigos. Gustavo veio falar comigo e disse que precisava resolver uma questão antiga com Fernando, mas não explicou do que se tratava."`
+> "Conheço Fernando há alguns anos, e ele sempre vem falando dos conflitos da empresa antiga, principalmente com seu ex-sócio, Gustavo. Conversamos por uns dez minutos e depois fui jogar sinuca com meus amigos. Gustavo veio falar comigo e disse que precisava resolver uma questão antiga com Fernando, mas não explicou do que se tratava."`
       },
       {
         name: 'Juliana Costa',
@@ -83,7 +83,7 @@ export const CASES: Record<CaseId, CaseData> = {
         statement: String.raw`**Idade:** 39 anos  
 **Tempo no restaurante:** 11 anos
 
-> "Lucas vinha cometendo erros no trabalho, e hoje discutimos por causa de um pedido do estoque. Depois, continuei preparando os pratos e organizando algumas coisas na cozinha. Quando terminei minhas tarefas, estava indo embora até ouvir Bruno gritando, fui um dos primeiros a chegar ao local e fiquei surpreso ao encontrar Lucas daquela maneira."`
+> "Lucas vinha cometendo erros no trabalho, e hoje discutimos por causa de um pedido do estoque. Depois, continuei preparando os pratos e organizando algumas coisas na cozinha. Ao terminar minhas tarefas, estava indo embora quando ouvi Bruno gritando. Fui um dos primeiros a chegar ao local e fiquei surpreso ao encontrar Lucas daquela maneira."`
       },
       {
         name: 'Mariana Costa',
@@ -91,7 +91,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 31,
         statement: String.raw`**Idade:** 31 anos
 
-> "Eu estava organizando os alimentos na câmara fria, pois precisamos de espaço. Temos uma grande quantidade de legumes, principalmente tomates, já que cozinhamos muitos molhos vermelhos. Ouvi Lucas discutindo com Rafael e não consegui entender, só entendi que Chef ia demiti-lo. Mas, quando saí da câmara fria, vi apenas Rafael lavando as mãos. Além disso, a faca que eu tinha deixado na bancada havia sumido."`
+> "Eu estava organizando os alimentos na câmara fria, pois precisamos de espaço. Temos uma grande quantidade de legumes, principalmente tomates, já que preparamos muitos molhos vermelhos. Ouvi Lucas discutindo com Rafael, mas não consegui entender toda a conversa. Só entendi que o chef ia demiti-lo. Mas, quando saí da câmara fria, vi apenas Rafael lavando as mãos. Além disso, a faca que eu tinha deixado na bancada havia sumido."`
       },
       {
         name: 'Diego Martins',
@@ -115,7 +115,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 42,
         statement: String.raw`**Idade:** 42 anos
 
-> "Eu estava lavando o piso da cozinha perto do horário de fechar. Ouvi Rafael desabafar com Mariana que resolveria algum problema com Lucas naquela noite. Depois, encontrei o corpo de Lucas com a faca cravada nele, quando fui limpar os fundos do restaurante."`
+> "Eu estava lavando o piso da cozinha perto do horário de fechamento. Ouvi Rafael desabafando com Mariana e dizendo que resolveria algum problema com Lucas naquela noite. Depois, encontrei o corpo de Lucas com a faca cravada nele quando fui limpar os fundos do restaurante."`
       }
     ]
   },
@@ -128,7 +128,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 52,
         statement: String.raw`**Idade:** 52 anos
 
-> "O Eduardo reclamava bastante do atraso da reforma e pressionava todo mundo. Na hora do crime eu estava conferindo a entrega de cimento na frente da casa. Só entrei quando ouvi o pessoal gritando. Laura foi a última a descer as escadas com a correria"`
+> "O Eduardo reclamava bastante do atraso da reforma e pressionava todo mundo. Na hora do crime, eu estava conferindo a entrega de cimento na frente da casa. Só entrei quando ouvi o pessoal gritando. Laura foi a última a descer as escadas durante a correria."`
       },
       {
         name: 'Carlos Henrique',
@@ -144,7 +144,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 40,
         statement: String.raw`**Idade:** 40 anos
 
-> "Estava instalando as tomadas do segundo andar quando vi Laura chegar da escola. Ela subiu para o quarto, mas algum tempo depois ouvi passos descendo a escada. Não consegui ver quem era. Também escutei uma discussão no andar de baixo, mas achei que fosse um assunto particular da família.”`
+> "Estava instalando as tomadas do segundo andar quando vi Laura chegar da escola. Ela subiu para o quarto, mas, algum tempo depois, ouvi passos descendo a escada. Não consegui ver quem era. Também escutei uma discussão no andar de baixo, mas achei que fosse um assunto particular da família."`
       },
       {
         name: 'Renata Souza',
@@ -181,7 +181,7 @@ export const CASES: Record<CaseId, CaseData> = {
         age: 50,
         statement: String.raw`**Idade:** 50 anos
 
-> "Fui convidado para jantar e aproveitei para conversar com Rogério sobre alguns documentos da sociedade. Ele estava muito nervoso, chegou a beber enquanto discutíamos os problemas da empresa. Depois fui ao escritório organizar alguns papéis. Só soube do ocorrido quando ouvi Helena gritando. Rogério estava passando por muita pressão, mas nunca imaginei que chegaria a esse ponto."`
+> "Fui convidado para jantar e aproveitei para conversar com Rogério sobre alguns documentos da sociedade. Ele estava muito nervoso e chegou a beber enquanto discutíamos os problemas da empresa. Depois, fui ao escritório organizar alguns papéis. Só soube do ocorrido quando ouvi Helena gritando. Rogério estava passando por muita pressão, mas nunca imaginei que chegaria a esse ponto."`
       },
       {
         name: 'Tereza',
