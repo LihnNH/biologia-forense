@@ -19,6 +19,8 @@ import type { CaseId } from './data/cases';
 import { VisitorGroupModal } from './components/VisitorGroupModal';
 import { onFairStatisticsReset, registerGroup, registerSolvedCase } from './lib/fairStatistics';
 import { PageHelpModal, type HelpPage } from './components/PageHelpModal';
+import { FocalCursor } from './components/FocalCursor';
+import { suspectCursorOptions } from './data/suspectCursor';
 
 export default function App() {
   const { cases, t } = useI18n();
@@ -126,6 +128,7 @@ export default function App() {
   });
   return <>
     <Background active={!loading} smokeSettings={smokeSettings} smokeTint={state.view === 'done' ? finaleColors[state.caseId] : null} />
+    <FocalCursor options={suspectCursorOptions} active={state.view === 'case' && !helpBlocked && !helpPage} />
     <main className={`page${loading ? ' is-loading' : ''}${state.view === 'done' ? ' is-finale' : ''}`} inert={loading || finaleTransitioning || Boolean(state.modal) || Boolean(portrait) || settingsModalOpen || Boolean(pendingCase) || Boolean(helpPage)} aria-hidden={loading}>
       <section {...screenProps('home')}><Home onCase={setPendingCase} onInfo={() => dispatch({ type: 'info' })} /></section>
       <section {...screenProps('case')}>{state.view === 'case' && <CaseScreen caseId={state.caseId} onHome={() => dispatch({ type: 'navigate', view: 'home' })} activePortrait={portrait?.index ?? null} selectedGuess={selectedGuess} onPick={index => dispatch({ type: 'pick', index })} onCode={() => dispatch({ type: 'navigate', view: 'guess' })} onPortrait={(index, source) => {
