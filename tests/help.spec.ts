@@ -24,7 +24,7 @@ async function choose(page: Page) {
   await page.locator('#open-guess').click();
 }
 
-test('o botão redondo abre a ajuda de cada tela e preserva o código e o palpite', async ({ page }) => {
+test('o botão redondo aparece só na tela inicial e H mantém a ajuda nas demais telas', async ({ page }) => {
   await ready(page);
   const button = page.getByRole('button', { name: 'Ajuda', exact: true });
   await expect(button).toHaveText('?');
@@ -38,15 +38,17 @@ test('o botão redondo abre a ajuda de cada tela e preserva o código e o palpit
   await page.keyboard.press('Escape');
   await expect(button).toBeFocused();
   await openCase(page, 'Faca');
-  await button.click();
+  await expect(button).toHaveCount(0);
+  await page.keyboard.press('h');
   await expect(page.getByRole('dialog', { name: 'Investigue os suspeitos' })).toBeVisible();
   await expect(page.locator('.page-help-shortcuts')).toHaveCount(0);
   await page.locator('#close-page-help').click();
-  await expect(button).toBeFocused();
+  await expect(button).toHaveCount(0);
   await choose(page);
   await page.locator('.code-input').nth(0).press('t');
   await page.locator('.code-input').nth(1).press('a');
-  await button.click();
+  await expect(button).toHaveCount(0);
+  await page.keyboard.press('h');
   await expect(page.getByRole('dialog', { name: 'Descubra o código' })).toBeVisible();
   await expect(page.locator('.page-help-shortcuts')).toHaveCount(0);
   await page.keyboard.press('h');
