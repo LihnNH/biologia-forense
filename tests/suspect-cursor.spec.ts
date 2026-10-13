@@ -87,3 +87,41 @@ test('movimento reduzido preserva a lupa e os alvos sem animação de transiçã
   await expect(page.locator('#home-view')).toBeVisible();
   await expect(page.locator('body')).not.toHaveClass(/focal-cursor/);
 });
+
+test('o contorno acompanha a inclinação e as mudanças do card de palpite com o mouse parado', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await expect(page.locator('.startup-screen')).toHaveCount(0);
+  await openCase(page, 'Faca');
+  await page.locator('#open-pick').click();
+  const card = page.locator('.suspect-portrait').first();
+  await expect.poll(() => card.evaluate(element => element.getAnimations().filter(animation => animation.playState === 'running'
+    && animation.effect instanceof KeyframeEffect && animation.effect.getKeyframes().some(frame => 'transform' in frame)).length)).toBe(0);
+  await card.evaluate(element => (element as HTMLElement).style.setProperty('--portrait-tilt', '3deg'));
+  await card.hover();
+  await expect(page.locator('.focal-cursor')).toHaveAttribute('data-morph', '1.0000');
+  const alignment = () => card.evaluate(element => {
+    const path = document.querySelector<SVGPathElement>('[data-cursor-pieces] path')!;
+    const length = path.getTotalLength();
+    const start = path.getPointAtLength(length - 4), end = path.getPointAtLength(length);
+    const cursorAngle = Math.atan2(end.y - start.y, end.x - start.x);
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    const cardAngle = Math.atan2(matrix.b, matrix.a);
+    const shape = document.querySelector<SVGGraphicsElement>('[data-cursor-pieces]')!.getBBox();
+    const box = element.getBoundingClientRect();
+    return { cursorAngle, cardAngle,
+      centerError: Math.hypot(shape.x + shape.width / 2 - box.left - box.width / 2,
+        shape.y + shape.height / 2 - box.top - box.height / 2) };
+  });
+  await expect.poll(async () => Math.abs((await alignment()).cursorAngle * 180 / Math.PI - 3)).toBeLessThan(.1);
+  await expect.poll(async () => Math.abs((await alignment()).cursorAngle - (await alignment()).cardAngle)).toBeLessThan(.002);
+  // Change the live CSS transition after the cursor has settled; no pointermove wakes it.
+  await card.evaluate(element => (element as HTMLElement).style.setProperty('--portrait-tilt', '-6deg'));
+  await expect.poll(async () => Math.abs((await alignment()).cursorAngle * 180 / Math.PI + 6)).toBeLessThan(.1);
+  await expect.poll(async () => Math.abs((await alignment()).cursorAngle - (await alignment()).cardAngle)).toBeLessThan(.002);
+  expect((await alignment()).centerError).toBeLessThan(3);
+  await page.screenshot({ path: testInfo.outputPath('picking-rotated-cursor.png') });
+  await page.getByRole('button', { name: 'Marcar Rafael Oliveira como suspeito', exact: true }).click();
+  await expect(page.locator('.suspect-gallery')).not.toHaveClass(/is-picking/);
+  await expect.poll(async () => Math.abs((await alignment()).cursorAngle)).toBeLessThan(.002);
+  await expect(page.locator('.suspect-portrait.is-guess')).toHaveCount(1);
+});

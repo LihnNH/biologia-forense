@@ -29,6 +29,13 @@ circulares para navegadores sem `corner-shape: squircle`. `nativeCursor`
 define o cursor enquanto a camada SVG ainda não está visível; `followRange`
 controla quanto o contorno acompanha o ponteiro dentro do alvo.
 
+`followTargetTransform` acompanha a rotação, translação e escala 2D do próprio
+alvo, inclusive durante suas animações, sem atrasar essas mudanças com as molas
+usadas no deslocamento entre cards. Fica desativado por padrão. Para excluir
+um estado da tela, restrinja `targetSelector`; por exemplo,
+`.suspect-gallery:not(.is-picking) .suspect-portrait` mantém apenas a lupa no
+modo de marcar suspeito.
+
 O módulo respeita movimento reduzido e ponteiros sem hover. Para uso sem
 React, `createFocalCursor(svg, options)` oferece `setActive` e `dispose`.
 A camada SVG precisa conter quatro paths em `[data-cursor-pieces]` e um path
