@@ -23,7 +23,9 @@ export interface FairStatistics {
 // Decimal strings and BigInt keep counts exact without imposing a numeric maximum.
 export function parseGroupSize(value: string): bigint | null {
   const trimmed = value.trim();
-  return /^[+-]?\d+$/.test(trimmed) ? BigInt(trimmed) : null;
+  if (!/^[+-]?\d+$/.test(trimmed)) return null;
+  const visitors = BigInt(trimmed);
+  return visitors >= 0n ? visitors : null;
 }
 
 function count(value: unknown): string {
@@ -138,6 +140,7 @@ async function updateStatistics(update: (statistics: FairStatistics) => void) {
 }
 
 export async function registerGroup(caseId: CaseId, visitors: bigint) {
+  if (visitors < 0n) throw new RangeError('Group size must be at least 0.');
   await updateStatistics(statistics => {
     statistics.visitors = (BigInt(statistics.visitors) + visitors).toString();
     if (visitors === 0n) return;

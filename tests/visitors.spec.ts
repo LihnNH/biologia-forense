@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { CASE_ORDER, CASE_RESULTS, type CaseId } from '../src/data/cases';
+import { registerGroup } from '../src/lib/fairStatistics';
 
 test.use({ viewport: { width: 1366, height: 768 } });
 test.beforeEach(async ({ context }) => {
@@ -11,6 +12,7 @@ async function promptGroup(page: Page, id: CaseId) {
   await page.locator(`[data-case="${id}"]`).click();
   await expect(page.locator('#visitor-group-modal')).toBeVisible();
   await expect(page.locator('#group-visitors')).toBeFocused();
+  await expect(page.locator('#group-visitors')).toHaveValue('3');
 }
 
 async function addGroup(page: Page, id: CaseId, value: string) {
@@ -61,10 +63,10 @@ test('registra com teclado e −/+, soma os grupos e mantém o total ao recarreg
   await promptGroup(page, 'Faca');
   await page.locator('#group-visitors').press('ArrowUp');
   await page.getByRole('button', { name: 'Aumentar visitantes' }).click();
-  await expect(page.locator('#group-visitors')).toHaveValue('2');
+  await expect(page.locator('#group-visitors')).toHaveValue('5');
   await page.getByRole('button', { name: 'Diminuir visitantes' }).click();
   await page.locator('#group-visitors').press('ArrowDown');
-  await expect(page.locator('#group-visitors')).toHaveValue('0');
+  await expect(page.locator('#group-visitors')).toHaveValue('3');
   await page.screenshot({ path: testInfo.outputPath('visitor-group.png') });
   await page.locator('#group-visitors').fill('5');
   await page.locator('#group-visitors').press('Enter');
@@ -154,17 +156,26 @@ test('código errado não conta solução e acertar depois conta uma única vez'
   await expect(page.locator('#total-visitors, #total-groups, #total-solved')).toHaveText(['6', '1', '1']);
 });
 
-test('não impõe limites numéricos e preserva inteiros enormes sem perder precisão', async ({ page }) => {
+test('impõe mínimo 0 por botões, setas e teclado, sem limitar inteiros enormes', async ({ page }) => {
   await page.goto('/');
   await promptGroup(page, 'Corda');
   await page.getByRole('button', { name: 'Diminuir visitantes' }).click();
-  await expect(page.locator('#group-visitors')).toHaveValue('-1');
-  expect(await page.locator('#group-visitors').getAttribute('min')).toBeNull();
+  await page.locator('#group-visitors').press('ArrowDown');
+  await page.locator('#group-visitors').press('ArrowDown');
+  await expect(page.locator('#group-visitors')).toHaveValue('0');
+  await page.locator('#group-visitors').press('ArrowDown');
+  await page.getByRole('button', { name: 'Diminuir visitantes' }).click();
+  await expect(page.locator('#group-visitors')).toHaveValue('0');
+  await expect(page.locator('#confirm-group-visitors')).toBeEnabled();
   expect(await page.locator('#group-visitors').getAttribute('max')).toBeNull();
-  for (const invalid of ['', '-', '1.5', '1e6', 'abc']) {
+  for (const invalid of ['', '-', '-2', '-99999999999999999999999999999999', '1.5', '1e6', 'abc']) {
     await page.locator('#group-visitors').fill(invalid);
     await expect(page.locator('#confirm-group-visitors')).toBeDisabled();
-    await expect(page.locator('#visitor-group-error')).toHaveText('Digite um número inteiro.');
+    await expect(page.locator('#visitor-group-error')).toHaveText('Digite um número inteiro maior ou igual a 0.');
+    await page.locator('#group-visitors').press('Enter');
+    await expect(page.locator('#visitor-group-modal')).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('visitantes_totais'))).toBeNull();
+    expect(await page.evaluate(() => localStorage.getItem('forensic-fair-statistics'))).toBeNull();
   }
   await page.locator('#group-visitors').fill('99999999999999999999999999999999999999');
   await page.locator('#confirm-group-visitors').click();
@@ -180,6 +191,10 @@ test('não impõe limites numéricos e preserva inteiros enormes sem perder prec
     { grupo: '1', visitantes: '99999999999999999999999999999999999999' },
     { grupo: '2', visitantes: '1' }
   ]);
+});
+
+test('registrar um grupo negativo diretamente é rejeitado antes de acessar o armazenamento', async () => {
+  await expect(registerGroup('Faca', -2n)).rejects.toThrow(RangeError);
 });
 
 test('uma confirmação repetida enquanto salva não soma duas vezes', async ({ page }) => {
@@ -551,7 +566,8 @@ test('histórico inválido não bloqueia a contagem e mantém os registros váli
     localStorage.setItem('visitantes_totais', '9');
     localStorage.setItem('forensic-fair-statistics', JSON.stringify({ groups: '2', groupHistory: [
       { number: '1', visitors: '5' }, null, 'bad', { number: 'x', visitors: '4' },
-      { number: '2', visitors: 'NaN' }, { number: '0', visitors: '3' }, { number: '9', visitors: '0' }
+      { number: '2', visitors: 'NaN' }, { number: '0', visitors: '3' }, { number: '9', visitors: '0' },
+      { number: '8', visitors: '-2' }, { number: '-1', visitors: '5' }
     ] }));
   });
   await addGroup(page, 'Veneno', '3');

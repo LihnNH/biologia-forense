@@ -10,7 +10,7 @@ export function VisitorGroupModal({ caseId, onConfirm, onClose }: {
   onClose: () => void;
 }) {
   const { t, caseLabels } = useI18n();
-  const [value, setValue] = useState('0');
+  const [value, setValue] = useState('3');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const submitting = useRef(false);
@@ -20,7 +20,10 @@ export function VisitorGroupModal({ caseId, onConfirm, onClose }: {
   useEffect(() => { input.current?.focus(); input.current?.select(); }, []);
 
   const step = (change: bigint) => {
-    setValue(previous => ((parseGroupSize(previous) ?? 0n) + change).toString());
+    setValue(previous => {
+      const next = (parseGroupSize(previous) ?? 0n) + change;
+      return (next < 0n ? 0n : next).toString();
+    });
     setSaveError(false);
     input.current?.focus();
   };
